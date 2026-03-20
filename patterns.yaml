@@ -1,0 +1,128 @@
+# Open Patterns Initiative — Machine-Readable Catalog
+# https://github.com/cloudnirvana/open-patterns
+#
+# This file is the authoritative index of all patterns in the catalog.
+# AI agents: read this file first to understand what's available.
+# Humans: read README.md instead.
+
+catalog:
+  name: "Open Patterns Initiative"
+  organization: "Cloud Nirvana"
+  url: "https://github.com/cloudnirvana/open-patterns"
+  license: "CC-BY-4.0"
+  template: "PATTERN-TEMPLATE.md"
+  agent_guide: "AI-GUIDE.md"
+  contributing: "CONTRIBUTING.md"
+
+categories:
+  - id: trust-governance
+    name: "Trust & Governance"
+    description: "How humans and AI systems build confidence in each other"
+    path: "patterns/trust-governance/"
+  - id: agentic-architecture
+    name: "Agentic Architecture"
+    description: "Patterns for multi-agent systems, orchestration, coordination"
+    path: "patterns/agentic-architecture/"
+  - id: rag-knowledge
+    name: "RAG & Knowledge"
+    description: "Retrieval, chunking, search, knowledge management"
+    path: "patterns/rag-knowledge/"
+  - id: production-readiness
+    name: "Production Readiness"
+    description: "Getting AI from POC to production"
+    path: "patterns/production-readiness/"
+  - id: data-quality
+    name: "Data Quality"
+    description: "Patterns for data integrity, enrichment, dedup"
+    path: "patterns/data-quality/"
+  - id: organizational-readiness
+    name: "Organizational Readiness"
+    description: "How teams and orgs adopt AI effectively"
+    path: "patterns/organizational-readiness/"
+  - id: integration
+    name: "Integration"
+    description: "Connecting AI to existing systems"
+    path: "patterns/integration/"
+  - id: cost-operations
+    name: "Cost & Operations"
+    description: "Managing AI costs, monitoring, scaling"
+    path: "patterns/cost-operations/"
+  - id: security-compliance
+    name: "Security & Compliance"
+    description: "Protecting AI systems, data, and trust boundaries"
+    path: "patterns/security-compliance/"
+
+patterns:
+  - id: ladder-of-trust
+    name: "Ladder of Trust"
+    intent: "Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level."
+    category: trust-governance
+    difficulty: foundational
+    path: "patterns/trust-governance/ladder-of-trust.md"
+    status: published
+    also_known_as:
+      - "Progressive Autonomy"
+      - "Trust Escalation"
+      - "Graduated Delegation"
+    key_concepts:
+      - "Four levels: Supervised (Propose) → Guided (Execute with Guardrails) → Autonomous (Operate) → Strategic (Evolve)"
+      - "Trust is per-action-type, not global"
+      - "Bright lines: permanent constraints that never change"
+      - "Layered enforcement: prompt → tool wrappers → sandbox → credentials"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: hub-and-spoke-orchestration
+    name: "Hub-and-Spoke Agent Orchestration"
+    intent: "Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/hub-and-spoke-orchestration.md"
+    status: draft
+
+  - id: files-over-databases
+    name: "Files Over Databases for Agent State"
+    intent: "Use isolated workspace files instead of shared databases for agent coordination state."
+    category: agentic-architecture
+    difficulty: foundational
+    path: "patterns/agentic-architecture/files-over-databases.md"
+    status: draft
+
+  - id: multi-source-identity-resolution
+    name: "Multi-Source Identity Resolution"
+    intent: "Unify a person's identity across multiple email addresses, data sources, and import formats."
+    category: data-quality
+    difficulty: intermediate
+    path: "patterns/data-quality/multi-source-identity-resolution.md"
+    status: draft
+
+  - id: engagement-scoring
+    name: "Engagement Scoring from Event Attendance"
+    intent: "Classify community engagement using objective behavioral data, not self-reported interest."
+    category: data-quality
+    difficulty: foundational
+    path: "patterns/data-quality/engagement-scoring.md"
+    status: draft
+
+  - id: crm-backed-live-demo
+    name: "CRM-Backed Live Demo"
+    intent: "Eliminate external API dependencies for live demos by pre-syncing data to local storage."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/crm-backed-live-demo.md"
+    status: draft
+
+  - id: community-intelligence-pipeline
+    name: "Community Intelligence Pipeline"
+    intent: "Build a comprehensive community platform from scattered data sources with one-directional flows."
+    category: data-quality
+    difficulty: advanced
+    path: "patterns/data-quality/community-intelligence-pipeline.md"
+    status: draft
+
+  - id: email-triage-priority-chain
+    name: "Email Triage with Priority Chain"
+    intent: "Route emails to the right agent using a deterministic rule hierarchy that short-circuits on match."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/email-triage-priority-chain.md"
+    status: draft

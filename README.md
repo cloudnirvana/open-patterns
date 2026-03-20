@@ -55,9 +55,19 @@ Each pattern has three layers. Read as deep as your role requires:
 ### Cost & Operations
 *(Accepting contributions)*
 
+## For AI Agents
+
+This repo is designed to be consumed by AI agents, not just humans.
+
+- **[`patterns.yaml`](patterns.yaml)** — Machine-readable catalog index. Start here.
+- **[`AI-GUIDE.md`](AI-GUIDE.md)** — Instructions for AI agents: how to find, review, and draft patterns.
+- **[`DISCOVERY-PROMPT.md`](DISCOVERY-PROMPT.md)** — A ready-to-use prompt. Give it to your AI agent with your codebase, and it will identify patterns and draft contributions.
+
+Point your agent at this repo. It will know what to do.
+
 ## Contributing
 
-We welcome pattern contributions from practitioners. See [CONTRIBUTING.md](CONTRIBUTING.md) for the template, review process, and quality bar.
+We welcome pattern contributions from practitioners (and their AI agents). See [CONTRIBUTING.md](CONTRIBUTING.md) for the template, review process, and quality bar.
 
 **The one non-negotiable:** Every pattern must include a "What Broke" section. No hero narratives. If nothing broke, you haven't tested it in production.
 
