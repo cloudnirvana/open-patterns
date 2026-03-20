@@ -55,13 +55,14 @@ Each pattern has three layers. Read as deep as your role requires:
 ### Cost & Operations
 *(Accepting contributions)*
 
-## For AI Agents
+## Get Started
 
-This repo is designed to be consumed by AI agents, not just humans.
+**Using any AI tool?** Copy [QUICK-START.md](QUICK-START.md) into your AI tool (Claude, ChatGPT, Copilot, Cursor, whatever). It has everything: the template, an example, and prompts for every tool type.
 
-- **[`patterns.yaml`](patterns.yaml)** — Machine-readable catalog index. Start here.
-- **[`AI-GUIDE.md`](AI-GUIDE.md)** — Instructions for AI agents: how to find, review, and draft patterns.
-- **[`DISCOVERY-PROMPT.md`](DISCOVERY-PROMPT.md)** — A ready-to-use prompt. Give it to your AI agent with your codebase, and it will identify patterns and draft contributions.
+**Have an AI agent with repo access?** Point it here. It should read these files:
+- **[`patterns.yaml`](patterns.yaml)** — Machine-readable catalog index
+- **[`AI-GUIDE.md`](AI-GUIDE.md)** — Instructions for AI agents
+- **[`DISCOVERY-PROMPT.md`](DISCOVERY-PROMPT.md)** — Prompt for autonomous pattern discovery
 
 Point your agent at this repo. It will know what to do.
 
