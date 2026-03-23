@@ -126,3 +126,25 @@ patterns:
     difficulty: intermediate
     path: "patterns/agentic-architecture/email-triage-priority-chain.md"
     status: draft
+
+  - id: cross-session-context-bridging
+    name: "Cross-Session Context Bridging"
+    intent: "Safely share information between private and shared agent sessions without leaking sensitive data."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/cross-session-context-bridging.md"
+    status: identified
+
+  - id: per-agent-data-access-control
+    name: "Per-Agent Data Access Control"
+    intent: "Scope database access per agent with authorization wrappers, encrypted storage, and immutable audit logging."
+    category: security-compliance
+    difficulty: advanced
+    path: "patterns/security-compliance/per-agent-data-access-control.md"
+    status: in-progress
+    key_concepts:
+      - "Encrypted database (SQLCipher) as single source of truth"
+      - "Per-agent wrapper scripts with authorization rules"
+      - "Immutable audit log (agent can INSERT but not UPDATE/DELETE)"
+      - "Layered enforcement: wrappers now, container sandboxing later"
+      - "Connects to Ladder of Trust enforcement model"
