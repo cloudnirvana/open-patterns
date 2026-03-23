@@ -316,6 +316,8 @@ sequenceDiagram
 
 ### What Survived in Practice
 
+- **Per-agent data access control.** We implemented encrypted databases with per-agent authorization wrappers. Each agent has a defined access matrix: which tables it can read, which it can write, and which are completely off-limits. A partnership agent can see partner names but not dollar amounts. A finance agent can read invoices but not community contacts. Every query is logged to an immutable audit trail. This is Level 2 (Guided: Execute with Guardrails) enforcement at the data layer, and it works. See the companion pattern: [Per-Agent Data Access Control](../security-compliance/per-agent-data-access-control.md).
+
 - **The capability gap.** A team member asked the system for event attendance numbers. The system didn't yet have access to the event platform. Instead of failing silently or making up data, it responded honestly that it didn't have access, then sent the supervisor a request for the API key. Once provided, it wired up the integration, learned the data structure, retrieved the numbers, and completed the task. **Lesson:** this is Level 1 working correctly. The agent recognized a gap, escalated appropriately, expanded its capability within guardrails, and completed the work. Trust was reinforced, not eroded.
 
 ---
@@ -408,6 +410,7 @@ A critical implementation question: **who enforces trust levels?**
 | **Files Over Databases** | Agent isolation (separate workspaces) is a prerequisite for meaningful trust boundaries |
 | **Email Triage Priority Chain** | The Named Agent Rule is a trust mechanism (sender chooses who they trust) |
 | **Bright Lines Registry** | A companion pattern that documents permanent constraints |
+| **Per-Agent Data Access Control** | Enforces trust levels at the data layer with encrypted storage, authorization wrappers, and audit logging |
 
 ---
 

@@ -41,7 +41,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - CRM-Backed Live Demo *(coming soon)*
 
 ### Security & Compliance
-*(Accepting contributions)*
+- [Per-Agent Data Access Control](patterns/security-compliance/per-agent-data-access-control.md) — Scope database access per AI agent using authorization wrappers, encrypted storage, and immutable audit logging.
 
 ### Organizational Readiness
 *(Accepting contributions)*
