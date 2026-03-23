@@ -148,3 +148,23 @@ patterns:
       - "Immutable audit log (agent can INSERT but not UPDATE/DELETE)"
       - "Layered enforcement: wrappers now, container sandboxing later"
       - "Connects to Ladder of Trust enforcement model"
+
+  - id: call-intelligence-loop
+    name: "Call Intelligence Loop"
+    intent: "Close the feedback loop between relationship interactions and strategic planning so that every conversation makes the next one smarter."
+    category: organizational-readiness
+    difficulty: intermediate
+    path: "patterns/organizational-readiness/call-intelligence-loop.md"
+    status: draft
+    also_known_as:
+      - "Meeting Intelligence Cycle"
+      - "Relationship Feedback Loop"
+      - "Conversational CRM"
+    key_concepts:
+      - "Six phases: Prepare → Meet → Capture → Update → Analyze → Act, forming a closed loop"
+      - "Persistent state file as shared memory across all phases"
+      - "Human-in-the-loop at every mutation point and outward-facing action"
+      - "Research-before-act: no outreach without fresh external research and fit check"
+      - "Voice preservation: documented DO/DON'T rules govern all drafts"
+      - "Honest disqualification: AI should say 'poor fit' rather than force-fitting"
+    contributor: "Ajith Sahasranamam, Ongil AI"
