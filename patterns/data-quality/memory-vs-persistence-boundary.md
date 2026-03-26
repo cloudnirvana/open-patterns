@@ -21,7 +21,7 @@
 
 **What broke when we got this wrong:** We stored sponsor data in a markdown file (`SPONSORS.md`). Multiple agents read and updated it. Within a week: duplicate entries, stale data, no referential integrity. One agent thought Sponsor A was "confirmed"; another thought "pending." No single source of truth.
 
-**What survived:** CRM in SQLite (now SQLCipher) as system of record. Memory files for narrative context ("Sean was frustrated about Glean"). The boundary is clear: database for facts, memory for narrative.
+**What survived:** CRM in SQLite (now SQLCipher) as system of record. Memory files for narrative context ("the team lead was frustrated about a vendor integration"). The boundary is clear: database for facts, memory for narrative.
 
 ---
 
@@ -40,14 +40,14 @@
 Your agent just finished a conversation with the user. The session contained:
 - "Partner X signed the contract for $50K annually"
 - "Event is scheduled for March 26, 2-6 PM"
-- "Sean was frustrated that Glean's indexing missed key documents"
+- "the team lead was frustrated that a vendor's indexing missed key documents"
 - "Decided to prioritize Cincinnati expansion over Cleveland"
 
 Where do these go?
 
 If everything goes in memory files, you lose queryability. How do you find all partners with annual contracts over $25K? How do you see all events in Q2? You're grepping markdown files.
 
-If everything goes in a database, you lose context and narrative. "Sean was frustrated" doesn't fit in a `sentiment` ENUM. "Decided to prioritize" is a decision point, not a fact.
+If everything goes in a database, you lose context and narrative. "the team lead was frustrated" doesn't fit in a `sentiment` ENUM. "Decided to prioritize" is a decision point, not a fact.
 
 The Memory vs Persistence Boundary pattern provides a decision framework. It's not about what's important (everything is important). It's about structure, relationships, and how the data will be used.
 
@@ -78,7 +78,7 @@ graph TD
     subgraph "Session Context (Memory)"
         M1[MEMORY.md\nNarrative, decisions, context]
         M2[Daily logs\n2026-03-24.md]
-        M3[Emotional context\n"Sean was frustrated"]
+        M3[Emotional context\n"the team lead was frustrated"]
         M4[Decision points\n"Decided to prioritize Cincinnati"]
     end
     
@@ -125,7 +125,7 @@ graph TD
 - **Database:** Data is queried frequently across many records.
 
 **Example:**
-- "Sean was frustrated about Glean" → Memory (grepped when needed)
+- "the team lead was frustrated about a vendor integration" → Memory (grepped when needed)
 - Event times (2-6 PM) → Database (queried for scheduling conflicts)
 
 #### 2. Relationships (Foreign Keys)
@@ -157,7 +157,7 @@ graph TD
 - **Database:** Factual, structured, canonical. What happened.
 
 **Example:**
-- "Sean was frustrated" → Memory (emotional context)
+- "the team lead was frustrated" → Memory (emotional context)
 - Event name, date, venue → Database (facts)
 
 #### 6. One-Off vs Reusable
@@ -176,7 +176,7 @@ Use this table when deciding where new data should live:
 |--------------|-----------|----------------|--------------|----------------|-------------------|-----------|-------------|
 | Event times (2-6 PM) | ✅ Yes | ✅ Yes (event_id) | ✅ Yes | ❌ No | ✅ Fact | ✅ Yes | **Database** |
 | Partner financials | ✅ Yes | ✅ Yes (partner_id) | ✅ Yes | ✅ Yes | ✅ Fact | ✅ Yes | **Database** |
-| "Sean frustrated about Glean" | ❌ No | ❌ No | ❌ No | ❌ No | ❌ Narrative | ❌ No | **Memory** |
+| "team lead frustrated about vendor integration" | ❌ No | ❌ No | ❌ No | ❌ No | ❌ Narrative | ❌ No | **Memory** |
 | Daily decisions/notes | ❌ No | ❌ No | ❌ No | ❌ No | ❌ Narrative | ❌ No | **Memory** |
 | Sponsor data (name, tier, status) | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Fact | ✅ Yes | **Database** |
 | "Decided to prioritize Cincinnati" | ❌ No | ❌ No | ❌ No | ❌ No | ❌ Narrative | ❌ No | **Memory** |
@@ -245,7 +245,7 @@ decision = classify_data(event_data)  # Returns "database"
 session_data = [
     {"text": "Partner X signed contract for $50K", "type": "fact"},
     {"text": "Event March 26, 2-6 PM", "type": "fact"},
-    {"text": "Sean frustrated about Glean", "type": "narrative"},
+    {"text": "team lead frustrated about vendor integration", "type": "narrative"},
     {"text": "Prioritize Cincinnati expansion", "type": "decision"}
 ]
 
@@ -272,7 +272,7 @@ for item in session_data:
 - **Multi-agent coordination.** Agents can query the database concurrently. Memory files stay isolated per agent.
 
 ### Liabilities
-- **Judgment calls.** Some data sits on the boundary. Is "Sean prefers email over Slack" a fact (database) or context (memory)? You have to decide.
+- **Judgment calls.** Some data sits on the boundary. Is "the CEO prefers email over Slack" a fact (database) or context (memory)? You have to decide.
 - **Data duplication.** Sometimes the same information exists in both places: "Partner X signed contract" in MEMORY.md (narrative) and `contracts` table (fact). This is intentional but can feel redundant.
 - **Migration pain.** If you realize data should have been in a database from the start, migrating from markdown to structured storage is manual work.
 
@@ -308,14 +308,14 @@ Multiple agents read and updated this file. Within a week:
 
 **Root cause:** Event times are facts (database). Agent was treating them as narrative (memory).
 
-**Fix:** Event times moved to `events` table. Agents query before making availability statements. Memory files capture "Sean prefers afternoon meetings" (narrative).
+**Fix:** Event times moved to `events` table. Agents query before making availability statements. Memory files capture "the CEO prefers afternoon meetings" (narrative).
 
 ### What Survived in Practice
 
 **CRM as system of record:** Contact names, companies, event details, attendance → all in encrypted SQLite (now SQLCipher). Multiple agents query concurrently. Foreign keys enforce relationships. SQL handles "show me all events in Q2."
 
 **Memory files for narrative context:** 
-- `MEMORY.md`: "Sean was frustrated that Glean's indexing missed key documents"
+- `MEMORY.md`: "the team lead was frustrated that a vendor's indexing missed key documents"
 - Daily logs: "2026-03-24: Decided to prioritize Cincinnati expansion"
 - Session notes: "Tracy mentioned concerns about sponsor engagement"
 
@@ -338,7 +338,7 @@ When agents need to understand tone, emotion, or decision-making context, they r
 ### Common Pitfalls
 
 - **Treating everything as narrative.** If multiple agents need it or you'll query it later, it's a database candidate even if it feels ephemeral right now.
-- **Over-structuring.** "Sean was frustrated" doesn't need a `sentiment` ENUM. Leave narrative in memory.
+- **Over-structuring.** "the team lead was frustrated" doesn't need a `sentiment` ENUM. Leave narrative in memory.
 - **Ignoring change frequency.** Data that updates often (attendance counts, status flags) belongs in a database even if it starts as memory.
 - **Not migrating when needed.** If you realize data should be in a database, migrate early. The longer you wait, the more markdown-based workarounds pile up.
 
@@ -364,7 +364,7 @@ When you realize data should have been in a database:
 
 ### Data Sensitivity
 - **Facts are often sensitive.** Partner contract amounts, event attendance, financial data → these belong in encrypted databases.
-- **Narrative can be sensitive.** "Sean disagreed with the board about funding strategy" is operationally sensitive. Treat memory files accordingly.
+- **Narrative can be sensitive.** "the CEO disagreed with the board about funding strategy" is operationally sensitive. Treat memory files accordingly.
 - **Logs reveal operational patterns.** Daily logs show what the system prioritized, who it contacted, what decisions were made. This is intelligence.
 
 ### Failure Modes
