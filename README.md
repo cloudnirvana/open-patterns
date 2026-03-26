@@ -1,4 +1,5 @@
 # Open Patterns Initiative
+### The Practitioner Catalog for Agentic AI
 
 **Practitioner-sourced patterns for AI, cloud, and technology implementation.**
 
