@@ -22,7 +22,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Category** | Production Readiness |
+| **Category** | Agentic Architecture |
 | **Difficulty** | Intermediate |
 | **Also Known As** | Tiered Agent Memory, Context Checkpointing, Graceful Memory Degradation |
 | **Related Patterns** | Memory Access Control (handles who can see what; CLM handles when/what to persist), Per-Agent Data Access Control, Ladder of Trust |
