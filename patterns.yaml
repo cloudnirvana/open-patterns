@@ -246,3 +246,22 @@ patterns:
       - "Qwen 3 8B with thinking mode: 12/12 accuracy, $0 cost per classification"
       - "Hardware: Mac Mini M4 24GB, Ollama, ~6GB RAM for 8B model"
     contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: rem-cycle-nightly-maintenance
+    name: "REM Cycle: Nightly Maintenance for Agent Systems"
+    intent: "Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/rem-cycle-nightly-maintenance.md"
+    status: published
+    also_known_as:
+      - "System Health Monitoring"
+      - "Preventive Maintenance"
+      - "Self-Healing Systems"
+    key_concepts:
+      - "9 nightly checks: daily notes stub, QMD coverage, index health, file integrity, checkpoint cleanup, distillation reminder, DB backup, DB integrity, DB size"
+      - "Silent when healthy (HEARTBEAT_OK), announces issues"
+      - "Near-zero cost (filesystem checks only), detection next morning vs weeks later"
+      - "Enforces Memory Flush Discipline, Context Lifecycle Management, Hybrid Memory Retrieval"
+      - "REM = Rapid Eye Movement sleep (memory consolidation in humans)"
+    contributor: "Sean Erikson, Cloud Nirvana"
