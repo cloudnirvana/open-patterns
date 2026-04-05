@@ -269,6 +269,77 @@ Do NOT use when:
 
 **The highest-value content is most vulnerable.** Strategic conversations fill context fast (long exchanges, deep reasoning) and are the *least* recoverable from compaction (nuance, emotional context, evolving thinking). The pattern must prioritize protecting exactly the content that's hardest to recreate.
 
+### Memory Flush Discipline: "If It's Not Written, It Doesn't Exist"
+
+Context lifecycle management requires a foundational discipline: **ephemeral context must be promoted to durable storage, or it will be lost.**
+
+Session context *feels* stateful—agents remember recent exchanges, decisions, data. But this memory is temporary. When compaction fires, anything not written to a file is at risk.
+
+**The rule:** If it matters beyond this session, write it to a file immediately.
+
+**What gets flushed (and where):**
+
+| Content Type | Flush Target | Timing | Why |
+|--------------|--------------|--------|-----|
+| **Decisions** | Daily notes (`memory/YYYY-MM-DD.md`) | End of session or when made | Decisions shape future work; compaction erases decision context |
+| **Strategic insights** | `MEMORY.md` (long-term) | When you learn something new | Prevents re-learning the same lessons after compaction |
+| **Open threads** | Daily notes or session checkpoints | When context crosses 50% | Ensures "where we left off" survives compaction |
+| **Email drafts** | Gmail drafts API + `PENDING-APPROVALS.md` | Immediately after creation | Drafts in context-only disappear after compaction |
+| **Speaker pipeline updates** | `docs/operations/SPEAKER-PIPELINE-Q2-2026.md` | When status changes | Prevents "who did we reach out to?" re-queries |
+| **CRM/database changes** | SQLite writes via wrappers | Transaction-time | Data in context but not persisted = data loss |
+| **Config/template changes** | Version-controlled files (`EMAIL-SIGNATURES.md`) | When updated | Stale context causes agents to use old versions |
+
+**What NOT to flush:**
+- API responses after processing (Gmail threads, Eventbrite raw JSON)
+- Intermediate reasoning that led to a conclusion (flush the conclusion, drop the reasoning)
+- Noise (newsletters, automated notifications, transient errors)
+
+**Examples:**
+
+**Good (flush discipline):**
+```markdown
+# memory/2026-04-04.md
+
+## Tracy Email - Cincinnati Speakers
+- Tracy reached out to Chris Brock and Jason Hauer (April 4)
+- Updated speaker pipeline: both marked "outreach sent"
+- Waiting to hear back
+
+## Decisions
+- Removed Multi-Source Identity Resolution from pattern catalog (not pattern-worthy, basic DB normalization)
+- Added identity resolution as subsection of Local-First Data Architecture pattern
+```
+
+Next session, the agent reads `memory/2026-04-04.md` and knows Tracy's status update and the pattern catalog decision. Compaction can't erase what's written.
+
+**Bad (relying on context):**
+```
+Agent (internal thought): "Tracy emailed about Chris and Jason. I'll remember that."
+[No file write]
+[Compaction fires 2 hours later]
+[Next session: "Did Tracy reach out to anyone?"] 
+→ Agent has no record, has to ask user or re-search email
+```
+
+**When to flush:**
+
+1. **Immediately:** Database writes, file edits, email drafts (transaction-time persistence)
+2. **End of session:** Daily notes with decisions, insights, open threads
+3. **Before compaction risk:** Session checkpoints when context crosses 50-60%
+4. **Weekly:** Distill daily notes into `MEMORY.md` long-term memory
+
+**Why this matters:**
+
+Compaction isn't the only risk. Sessions end. Agents restart. Gateway processes restart. **If important context lives only in session memory, it's ephemeral by definition.**
+
+The discipline is simple:
+- Decision made? Write it.
+- Insight learned? Write it.
+- Status changed? Write it.
+- Thread unresolved? Write it.
+
+Memory flush discipline is the foundation that makes context lifecycle management work. Without it, even the best tiered memory architecture will lose data because nothing was promoted from working memory to durable storage.
+
 ---
 
 ## Implementation Notes
