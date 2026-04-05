@@ -10,9 +10,9 @@
 
 **The tradeoff:** Data is slightly stale (sync every 24h) but agents never block on network failures.
 
-**What broke when we got this wrong:** Live demo at a conference. Venue WiFi flaked. Agent couldn't fetch attendee list from Eventbrite. "Let me look that up..." → 30-second spinner → failure. Audience saw the system break in real time.
+**What broke when we got this wrong:** Live demo at a conference. Venue WiFi flaked. Agent couldn't fetch attendee list from Event Platform. "Let me look that up..." → 30-second spinner → failure. Audience saw the system break in real time.
 
-**What survived:** Local SQLite CRM with 2,567 contacts pre-synced the night before. Demo pivoted to querying local data. Instant results. No network dependency. The demo recovered.
+**What survived:** Local SQLite CRM with contacts pre-synced the night before. Demo pivoted to querying local data. Instant results. No network dependency. The demo recovered.
 
 ---
 
@@ -37,7 +37,7 @@ Your multi-agent system processes email, manages partnerships, coordinates event
 **Option 1: Query APIs on demand**
 ```python
 # Agent needs to draft an email
-contact = apollo_api.get_contact(email)  # 2-second API call
+contact = enrichment_api.get_contact(email)  # 2-second API call
 company = linkedin_api.get_company(domain)  # Rate limit hit, fails
 # Draft blocked waiting for external API
 ```
@@ -47,7 +47,7 @@ company = linkedin_api.get_company(domain)  # Rate limit hit, fails
 - Network failures (conference WiFi, ISP outages)
 - Latency (every query waits for round-trip)
 - Cost (pay per API call)
-- Dependency hell (if Apollo is down, all agents block)
+- Dependency hell (if Enrichment API is down, all agents block)
 
 **Option 2: Cache in memory**
 ```python
@@ -64,7 +64,7 @@ contacts_cache = {...}  # Loses on restart
 
 **Option 3: Local-first architecture** (this pattern)
 ```python
-# Nightly sync: Eventbrite → local CRM, Apollo → local CRM
+# Nightly sync: Event Platform → local CRM, Enrichment API → local CRM
 # Agents query local SQLite database
 conn = get_crm_connection()
 cursor.execute("SELECT name, title, company FROM contacts WHERE email = ?", [email])
@@ -75,7 +75,7 @@ cursor.execute("SELECT name, title, company FROM contacts WHERE email = ?", [ema
 - Data changes slowly (contacts, events, partnerships update daily, not second-by-second)
 - Agents need fast, reliable access (email drafting, analytics, segmentation)
 - Network failures are unacceptable (demos, live operations)
-- API costs matter (Apollo charges per enrichment)
+- API costs matter (Enrichment API charges per enrichment)
 
 ---
 
@@ -86,19 +86,19 @@ cursor.execute("SELECT name, title, company FROM contacts WHERE email = ?", [ema
 ```mermaid
 graph TB
     subgraph "External APIs (Upstream Sources)"
-        EB[Eventbrite API<br>Attendee data]
-        AP[Apollo.io API<br>Contact enrichment]
-        BR[Brevo API<br>Email engagement]
+        EB[Event Platform API<br>Attendee data]
+        AP[Enrichment API API<br>Contact enrichment]
+        BR[Email Platform API<br>Email engagement]
     end
     
     subgraph "Sync Layer (One-Way Pull)"
-        S1[Nightly Sync<br>Eventbrite → CRM]
-        S2[On-Demand Sync<br>Apollo → CRM]
-        S3[Hourly Poll<br>Brevo → CRM]
+        S1[Nightly Sync<br>Event Platform → CRM]
+        S2[On-Demand Sync<br>Enrichment API → CRM]
+        S3[Hourly Poll<br>Email Platform → CRM]
     end
     
     subgraph "Local System of Record"
-        CRM[(SQLite CRM<br>Encrypted, local<br>2,567 contacts)]
+        CRM[(SQLite CRM<br>Encrypted, local<br>contacts)]
     end
     
     subgraph "Agent Access Layer"
@@ -132,14 +132,14 @@ graph TB
 **Sync Direction:** One-way pull from external APIs into local CRM. Never push back.
 
 **Why one-way:**
-- Eventbrite is the source of truth for attendee data (don't try to sync back)
-- Apollo is read-only enrichment (no write API anyway)
-- Brevo tracks email engagement (we consume bounces/unsubs, don't push contacts back)
+- Event Platform is the source of truth for attendee data (don't try to sync back)
+- Enrichment API is read-only enrichment (no write API anyway)
+- Email Platform tracks email engagement (we consume bounces/unsubs, don't push contacts back)
 
 **Sync Frequency:**
-- **Eventbrite:** After each event (attendee list finalized)
+- **Event Platform:** After each event (attendee list finalized)
 - **Apollo:** On-demand when enriching a new contact (rate-limited, expensive)
-- **Brevo:** Daily poll for bounces, unsubscribes, engagement metrics
+- **Email Platform:** Daily poll for bounces, unsubscribes, engagement metrics
 
 ### Prerequisites: Multi-Source Identity Resolution
 
@@ -147,9 +147,9 @@ When you pre-sync data from multiple sources, the same person appears with diffe
 
 | Source | Email | Name | Company |
 |--------|-------|------|---------|
-| Eventbrite (Event 1) | john@company1.com | John Smith | Company A |
-| Eventbrite (Event 2) | jsmith@company2.com | J. Smith | Company B |
-| Apollo enrichment | john.smith@company2.com | John Smith | Company B LLC |
+| Event Platform (Event 1) | john@company1.com | John Smith | Company A |
+| Event Platform (Event 2) | jsmith@company2.com | J. Smith | Company B |
+| Enrichment API enrichment | john.smith@company2.com | John Smith | Company B LLC |
 
 **Without identity resolution:** 3 separate contacts, engagement scores split, can't track the person across events.
 
@@ -185,7 +185,7 @@ GROUP BY person_id;
 ```
 
 **Identity resolution process:**
-1. Import data from source (Eventbrite, Apollo)
+1. Import data from source (Event Platform, Apollo)
 2. Detect duplicates (fuzzy name match, same company domain)
 3. Assign `person_id` (manual review or automated heuristics)
 4. Mark `is_primary` email (most recent or most complete record)
@@ -197,7 +197,7 @@ GROUP BY person_id;
 - Duplicate outreach (Scout emailed the same person at 2 different addresses)
 
 **Tools:**
-- Apollo enrichment helps (returns canonical email + company)
+- Enrichment API enrichment helps (returns canonical email + company)
 - Manual LinkedIn lookup for gaps
 - CRM query: `SELECT email, name, company_domain FROM contacts WHERE name LIKE '%John Smith%'`
 
@@ -249,15 +249,15 @@ def get_crm_connection():
 
 ### Sync Scripts
 
-**Eventbrite → CRM:**
+**Event Platform → CRM:**
 ```bash
-# scripts/eventbrite-import.sh <event_id>
+# scripts/event_platform-import.sh <event_id>
 EVENT_ID=$1
 TOKEN="..."
 
 # Fetch attendees with custom question answers (company data)
 curl -H "Authorization: Bearer $TOKEN" \
-  "https://www.eventbriteapi.com/v3/events/$EVENT_ID/attendees/?expand=answers" | \
+  "https://www.event_platformapi.com/v3/events/$EVENT_ID/attendees/?expand=answers" | \
   python3 << 'PYEND'
 import json, sys
 from crm_db import get_crm_connection
@@ -278,14 +278,14 @@ for attendee in data['attendees']:
     
     cursor.execute("""
         INSERT OR REPLACE INTO contacts (email, name, company_domain, source)
-        VALUES (?, ?, ?, 'eventbrite')
+        VALUES (?, ?, ?, 'event_platform')
     """, [email, name, company])
 
 conn.commit()
 PYEND
 ```
 
-**Apollo enrichment (on-demand):**
+**Enrichment API enrichment (on-demand):**
 ```bash
 # scripts/apollo-enrich.sh <email>
 EMAIL=$1
@@ -315,13 +315,13 @@ if 'person' in data:
 PYEND
 ```
 
-**Brevo bounce/unsub poll (daily):**
+**Email Platform bounce/unsub poll (daily):**
 ```bash
-# scripts/brevo-poll-bounces.sh
+# scripts/email_platform-poll-bounces.sh
 TOKEN="..."
 
 curl -H "api-key: $TOKEN" \
-  "https://api.brevo.com/v3/contacts?limit=1000" | \
+  "https://api.email_platform.com/v3/contacts?limit=1000" | \
   python3 << 'PYEND'
 import json, sys
 from crm_db import get_crm_connection
@@ -381,7 +381,7 @@ PYEND
 **Agent usage:**
 ```bash
 # Lou drafting an email, needs contact title
-bash scripts/crm-query.sh lou "SELECT title, company_domain FROM contacts WHERE email = 'tracy@thecircuit.net'"
+bash scripts/crm-query.sh lou "SELECT title, company_domain FROM contacts WHERE email = 'contact@example.com'"
 ```
 
 ---
@@ -390,12 +390,12 @@ bash scripts/crm-query.sh lou "SELECT title, company_domain FROM contacts WHERE 
 
 **Live demo failure (March 2026):**
 
-Presenting Cloud Nirvana AIOS at a conference. Planned to show Lou pulling attendee data and generating a team breakdown on the fly.
+Presenting Multi-agent system at a conference. Planned to show Lou pulling attendee data and generating a team breakdown on the fly.
 
 **What happened:**
 - Venue WiFi flaked (intermittent connectivity)
-- Agent called `gog eventbrite attendees <event_id>`
-- Eventbrite API timed out (30-second spinner)
+- Agent called `gog event_platform attendees <event_id>`
+- Event Platform API timed out (30-second spinner)
 - Retried → timed out again
 - Audience watched the system fail in real-time
 
@@ -405,21 +405,21 @@ Presenting Cloud Nirvana AIOS at a conference. Planned to show Lou pulling atten
 
 **Long-term fix:** All demos now use local-first architecture. CRM pre-synced 24h before any presentation. API calls only for live updates (optional, not required).
 
-**Apollo rate limit hell (February 2026):**
+**Enrichment API rate limit hell (February 2026):**
 
-Enriching 2,567 contacts from Eventbrite imports. Apollo API requires 2-second delay between calls.
+Enriching contacts from Event Platform imports. Enrichment API API requires 2-second delay between calls.
 
 **Math:**
-- 2,567 contacts × 2 seconds = 5,134 seconds = 85 minutes
+- contacts × 2 seconds = 5,134 seconds = 85 minutes
 - Hit rate limit anyway (403 Forbidden after ~1,200 calls)
 - Remaining contacts unenriched
 - Agents drafting emails without title/company data
 
 **Fix:** Batch enrichment overnight. Store results in local CRM. Agents query locally (instant, no rate limits).
 
-**Apollo credits waste (March 2026):**
+**Enrichment API credits waste (March 2026):**
 
-Burned ~500 Apollo credits enriching contacts who never attended an event (imported from old email lists).
+Burned ~500 Enrichment API credits enriching contacts who never attended an event (imported from old email lists).
 
 **Root cause:** Enriching everyone before checking engagement. Should have filtered to attendees first.
 
@@ -442,7 +442,7 @@ Burned ~500 Apollo credits enriching contacts who never attended an event (impor
 - 100x - 2000x faster
 
 **Cost:**
-- Apollo enrichment: ~$0.10 per contact (limited credits)
+- Enrichment API enrichment: per-contact pricing (limited credits)
 - Local CRM: $0 per query
 - Savings: thousands of dollars for high-volume operations
 
@@ -464,24 +464,24 @@ Burned ~500 Apollo credits enriching contacts who never attended an event (impor
 - Sync failures need monitoring (cron + alerting)
 
 **Storage:**
-- SQLite file grows (2,567 contacts = ~5 MB encrypted)
+- SQLite file grows (contacts = ~5 MB encrypted)
 - Backup/versioning needed (Git LFS, Dropbox)
 
 ---
 
 ## Known Uses
 
-**Cloud Nirvana AIOS (production):**
-- CRM: 2,567 contacts, 1,965 attendance records, 23 events
-- Synced from: Eventbrite (attendance), Apollo (enrichment), Brevo (engagement)
+**Multi-agent system (production):**
+- CRM: contacts, attendance records, events
+- Synced from: Event Platform (attendance), Enrichment API (enrichment), Email Platform (engagement)
 - Encrypted with SQLCipher, passphrase in macOS Keychain
-- 11 agents query via wrapper scripts (per-agent access control)
+- multiple agents query via wrapper scripts (per-agent access control)
 - Used daily for email drafting, partnership outreach, event logistics
 
 **What we sync:**
-- Eventbrite attendee lists (after each event)
-- Apollo enrichment (on-demand, rate-limited)
-- Brevo bounces/unsubs (daily poll)
+- Event Platform attendee lists (after each event)
+- Enrichment API enrichment (on-demand, rate-limited)
+- Email Platform bounces/unsubs (daily poll)
 - Partner contracts (manual entry, version-controlled)
 
 **What we DON'T sync:**
@@ -528,7 +528,7 @@ Local CRM stores structured data (contacts, events). Memory files store narrativ
 # Try local first, fall back to API if not found
 contact = crm.get_contact(email)
 if not contact:
-    contact = apollo_api.enrich(email)
+    contact = enrichment_api.enrich(email)
     crm.save(contact)
 return contact
 ```
@@ -538,7 +538,7 @@ return contact
 # Query API, cache result locally for future queries
 @cache(ttl='24h', storage='sqlite')
 def get_contact(email):
-    return apollo_api.get(email)
+    return enrichment_api.get(email)
 ```
 
 **Write-back sync:**
@@ -546,7 +546,7 @@ def get_contact(email):
 # Local writes queue for eventual sync to upstream API
 # (Rare for agent systems; most external APIs are read-only)
 crm.update_contact(email, title='VP Engineering')
-sync_queue.enqueue('brevo.update_contact', email, title)
+sync_queue.enqueue('email_platform.update_contact', email, title)
 ```
 
 ### Testing Strategy
@@ -560,12 +560,12 @@ sync_queue.enqueue('brevo.update_contact', email, title)
 **Sync monitoring:**
 ```bash
 # Cron job: sync + verify row counts
-bash scripts/eventbrite-import.sh <event_id>
+bash scripts/event_platform-import.sh <event_id>
 BEFORE=$(sqlite3 crm.db "SELECT COUNT(*) FROM attendance")
 # ... sync ...
 AFTER=$(sqlite3 crm.db "SELECT COUNT(*) FROM attendance")
 if [ $AFTER -le $BEFORE ]; then
-  echo "Sync failed: row count decreased" | mail -s "CRM Sync Alert" sean@cloudnirvana.org
+  echo "Sync failed: row count decreased" | mail -s "CRM Sync Alert" admin@example.com
 fi
 ```
 
@@ -577,11 +577,11 @@ fi
 Store contact bios, talk abstracts as embeddings in local CRM. Agents query: "Find speakers who talked about AI governance."
 
 **Conflict resolution:**
-If we ever enable write-back to upstream APIs (Brevo contact updates), need merge strategy for conflicting writes.
+If we ever enable write-back to upstream APIs (Email Platform contact updates), need merge strategy for conflicting writes.
 
 **Multi-tenant:**
 One CRM per organization. Agents scoped to tenant_id. Enables AIOS-as-a-service.
 
 ---
 
-**Pattern status:** Fully implemented in Cloud Nirvana AIOS (February 2026). Survived production use (2,567 contacts, 11 agents, daily operations). Identity resolution prerequisite validated in practice.
+**Pattern status:** Fully implemented in Multi-agent system (February 2026). Survived production use (contacts, multiple agents, daily operations). Identity resolution prerequisite validated in practice.
