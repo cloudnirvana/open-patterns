@@ -43,7 +43,7 @@ company = linkedin_api.get_company(domain)  # Rate limit hit, fails
 ```
 
 **Problems:**
-- API rate limits (Apollo: 2s between calls, limited credits)
+- API rate limits (typical enrichment APIs: 1-2s between calls, limited credits)
 - Network failures (conference WiFi, ISP outages)
 - Latency (every query waits for round-trip)
 - Cost (pay per API call)
@@ -138,7 +138,7 @@ graph TB
 
 **Sync Frequency:**
 - **Event Platform:** After each event (attendee list finalized)
-- **Apollo:** On-demand when enriching a new contact (rate-limited, expensive)
+- **Enrichment API:** On-demand when enriching a new contact (rate-limited, expensive)
 - **Email Platform:** Daily poll for bounces, unsubscribes, engagement metrics
 
 ### Prerequisites: Multi-Source Identity Resolution
@@ -185,7 +185,7 @@ GROUP BY person_id;
 ```
 
 **Identity resolution process:**
-1. Import data from source (Event Platform, Apollo)
+1. Import data from source (Event Platform, Enrichment API)
 2. Detect duplicates (fuzzy name match, same company domain)
 3. Assign `person_id` (manual review or automated heuristics)
 4. Mark `is_primary` email (most recent or most complete record)
@@ -287,12 +287,12 @@ PYEND
 
 **Enrichment API enrichment (on-demand):**
 ```bash
-# scripts/apollo-enrich.sh <email>
+# scripts/enrich-contact.sh <email>
 EMAIL=$1
 TOKEN="..."
 
 # Rate limit: 2s between calls
-curl -X POST https://api.apollo.io/v1/people/match \
+curl -X POST https://api.enrichment.example/lookup \
   -H "Authorization: Bearer $TOKEN" \
   -d "email=$EMAIL" | \
   python3 << 'PYEND'
