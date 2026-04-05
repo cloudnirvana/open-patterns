@@ -381,6 +381,114 @@ Memory flush discipline is the foundation that makes context lifecycle managemen
 3. Optimize checkpoint triggers based on actual failure patterns
 4. Per-user memory profiles (some users need more strategic retention, others more operational)
 
+### Phase 5: Enforcement Mechanisms (Production-Proven)
+
+**The problem:** Memory Flush Discipline is a pattern, but without enforcement, it's ignored under pressure. Sessions end, context is lost, and data lives only in ephemeral conversation.
+
+**What broke:** March 25, 2026 — entire day's work lost. QMD benchmark results (8/8 wins, +57% improvement), LinkedIn import, Community Intelligence Platform creation. No daily notes file created. Session ended without flushing.
+
+**Three-layer enforcement system:**
+
+**Layer 1: Forcing Function (Midnight Cron)**
+```yaml
+# Create daily notes stub at midnight if it doesn't exist
+schedule:
+  kind: cron
+  expr: "0 0 * * *"  # Midnight daily
+  tz: "America/New_York"
+
+payload:
+  kind: agentTurn
+  message: |
+    Check if memory/YYYY-MM-DD.md exists.
+    If not, create stub:
+    
+    # YYYY-MM-DD — Day
+    
+    ## (Add sections as the day unfolds)
+    
+    If exists: HEARTBEAT_OK
+  
+sessionTarget: isolated
+delivery:
+  mode: none  # Silent infrastructure
+```
+
+**Result:** Daily notes file always exists. If session forgets to flush, stub exists as placeholder.
+
+**Layer 2: Human Discipline (End-of-Session Checklist)**
+
+Agent behavior before ending strategic sessions (>30 min, decisions made, deep work):
+
+```
+Agent: "Before we wrap: have we updated today's daily notes?"
+
+If no:
+  Agent: "What should I capture? Key decisions, insights, open threads?"
+  [Write/update memory/YYYY-MM-DD.md]
+```
+
+**Do NOT ask for:**
+- Routine operational sessions (<10 min)
+- Email triage
+- Quick questions
+- Cron runs
+
+**When TO ask:**
+- Strategic sessions (>30 min)
+- Sessions with decisions made
+- Before `/reset` when context >50%
+- Sessions involving patterns, insights, "what broke" moments
+
+**Layer 3: Auto-Checkpoint (Automatic Safety Net)**
+
+Agent automatically creates session checkpoint when:
+
+1. **User runs `/reset`** — session ending, context clearing
+2. **Context crosses 75%** — approaching compaction
+3. **Strategic session >2 hours** — high-value context accumulation
+
+Checkpoint file: `memory/session-checkpoint-YYYY-MM-DD-HHMM.md`
+
+```markdown
+# Session Checkpoint — YYYY-MM-DD HH:MM
+
+## Context
+[What we were working on]
+
+## Decisions Made
+[Key decisions in this session]
+
+## Open Threads
+[Unresolved items, waiting for, next steps]
+
+## Key Insights
+[Anything that changes long-term understanding]
+
+## Files Created/Modified
+[List of files touched]
+```
+
+**Checkpoint lifecycle:**
+- Lifetime: 7-14 days
+- Delete after distilling into `MEMORY.md` or daily notes
+- Prevents total loss even when human discipline fails
+
+**Why three layers:**
+
+- **Layer 1** creates the file (forcing function)
+- **Layer 2** prompts the human to fill it (discipline)
+- **Layer 3** saves context automatically when session ends unexpectedly (safety net)
+
+If any one layer fails, the other two catch it.
+
+**Results after implementation (April 5, 2026):**
+- Zero daily notes gaps since deployment
+- Session checkpoints created on 3 `/reset` events (all preserved context)
+- End-of-session prompts triggered 5 times, daily notes updated 5/5
+
+**Pattern status:** Enforcement validated in production. No data loss since March 25 failure.
+
 ### Pre-Session Loading Strategy
 
 When an agent starts a new session, load context by relevance:
