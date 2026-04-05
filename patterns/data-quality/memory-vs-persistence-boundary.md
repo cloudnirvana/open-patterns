@@ -310,6 +310,32 @@ Multiple agents read and updated this file. Within a week:
 
 **Fix:** Event times moved to `events` table. Agents query before making availability statements. Memory files capture "the CEO prefers afternoon meetings" (narrative).
 
+**Email signature reconstruction (April 2026):** Agent drafted an email and reconstructed the signature from session memory instead of reading `EMAIL-SIGNATURES.md`. Result: wrong logo URL, incorrect spacing, missing salutation. Required three iterations to fix.
+
+**Root cause:** The authoritative signature HTML lived in a documented file, but nothing enforced reading it. The agent guessed from context instead of consulting the source of truth.
+
+**The gap:** We documented WHERE data lives (EMAIL-SIGNATURES.md is authoritative), but not HOW to enforce looking there. The pattern describes the decision framework, but doesn't enforce using the right source.
+
+**Attempted fix:** Created EMAIL-CHECKLIST.md with mandatory pre-flight steps: "Read EMAIL-STANDARDS.md and EMAIL-SIGNATURES.md before drafting." But this is prompt-based enforcement — the agent is instructed to read the files, but nothing blocks draft creation if it skips them.
+
+**Better fix (not yet implemented):** Tool wrappers that enforce reading authoritative sources:
+```bash
+# Email draft wrapper enforces reading standards
+scripts/email-draft.sh --agent lou --to recipient@example.com
+# Script requires: cat EMAIL-SIGNATURES.md before allowing draft creation
+```
+
+Or OpenClaw policy layer:
+```yaml
+policies:
+  - before: gmail.drafts.create
+    require_read:
+      - docs/operations/EMAIL-STANDARDS.md
+      - docs/operations/EMAIL-SIGNATURES.md
+```
+
+**Lesson:** Documenting the boundary (memory vs persistence) is necessary but not sufficient. You also need enforcement mechanisms to prevent agents from guessing instead of reading.
+
 ### What Survived in Practice
 
 **CRM as system of record:** Contact names, companies, event details, attendance → all in encrypted SQLite (now SQLCipher). Multiple agents query concurrently. Foreign keys enforce relationships. SQL handles "show me all events in Q2."
@@ -334,6 +360,35 @@ When agents need to understand tone, emotion, or decision-making context, they r
 **Memory File Extraction:** Hub agent periodically reviews memory files and extracts facts for database. Acts as a data quality gate.
 
 **Database + Annotations:** Store facts in database, narrative in a `notes` TEXT column. Example: `events` table has `start_time` (fact) and `notes` (narrative). This works for small-scale systems.
+
+### Enforcement Gap (Open Problem)
+
+The pattern documents the decision framework, but doesn't solve enforcement: **How do you prevent agents from guessing instead of reading the authoritative source?**
+
+**Current state in AIOS:**
+- Email signatures live in `EMAIL-SIGNATURES.md` (authoritative)
+- Partner data lives in CRM database (authoritative)
+- Instructions exist in `AGENTS.md` and checklists
+- But agents can still skip reading and reconstruct from memory
+
+**Why wrappers work for databases:**
+- Scout can't query partners without calling `crm-query.sh scout "SELECT ..."`
+- The wrapper enforces database access
+- There's no "guess from memory" option
+
+**Why they don't work for documents:**
+- Email drafting is flexible (HTML, voice, tone)
+- No wrapper between agent and Gmail API
+- Agent can reconstruct signatures, guess formats, skip reading files
+
+**Potential solutions:**
+1. **Tool wrappers for document-heavy tasks** (email drafting, content generation)
+2. **OpenClaw policy layer** (require file reads before certain tool calls)
+3. **Verified checklists as tools** (can't proceed until checklist passes)
+
+None implemented yet. Prompt-based enforcement ("you must read X before doing Y") works most of the time, but failures are silent and only caught during human review.
+
+**Pattern status:** The decision framework is sound. Enforcement is an open problem.
 
 ### Common Pitfalls
 
