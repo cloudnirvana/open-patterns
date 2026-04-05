@@ -35,14 +35,6 @@ categories:
     name: "Data Quality"
     description: "Patterns for data integrity, enrichment, dedup"
     path: "patterns/data-quality/"
-  - id: organizational-readiness
-    name: "Organizational Readiness"
-    description: "How teams and orgs adopt AI effectively"
-    path: "patterns/organizational-readiness/"
-  - id: integration
-    name: "Integration"
-    description: "Connecting AI to existing systems"
-    path: "patterns/integration/"
   - id: cost-operations
     name: "Cost & Operations"
     description: "Managing AI costs, monitoring, scaling"
@@ -77,7 +69,16 @@ patterns:
     category: agentic-architecture
     difficulty: intermediate
     path: "patterns/agentic-architecture/hub-and-spoke-orchestration.md"
-    status: draft
+    status: published
+    also_known_as:
+      - "Coordinator Pattern"
+      - "Orchestrator Pattern"
+      - "Single Point of Coordination"
+    key_concepts:
+      - "One orchestrator queries specialists, never lateral agent-to-agent calls"
+      - "Multi-domain emails route exclusively to hub"
+      - "Prevents conflicting drafts and duplicate work"
+    contributor: "Sean Erikson, Cloud Nirvana"
 
   - id: files-over-databases
     name: "Files Over Databases for Agent State"
@@ -85,39 +86,15 @@ patterns:
     category: agentic-architecture
     difficulty: foundational
     path: "patterns/agentic-architecture/files-over-databases.md"
-    status: draft
-
-  - id: multi-source-identity-resolution
-    name: "Multi-Source Identity Resolution"
-    intent: "Unify a person's identity across multiple email addresses, data sources, and import formats."
-    category: data-quality
-    difficulty: intermediate
-    path: "patterns/data-quality/multi-source-identity-resolution.md"
-    status: draft
-
-  - id: engagement-scoring
-    name: "Engagement Scoring from Event Attendance"
-    intent: "Classify community engagement using objective behavioral data, not self-reported interest."
-    category: data-quality
-    difficulty: foundational
-    path: "patterns/data-quality/engagement-scoring.md"
-    status: draft
-
-  - id: crm-backed-live-demo
-    name: "CRM-Backed Live Demo"
-    intent: "Eliminate external API dependencies for live demos by pre-syncing data to local storage."
-    category: production-readiness
-    difficulty: intermediate
-    path: "patterns/production-readiness/crm-backed-live-demo.md"
-    status: draft
-
-  - id: community-intelligence-pipeline
-    name: "Community Intelligence Pipeline"
-    intent: "Build a comprehensive community platform from scattered data sources with one-directional flows."
-    category: data-quality
-    difficulty: advanced
-    path: "patterns/data-quality/community-intelligence-pipeline.md"
-    status: draft
+    status: published
+    also_known_as:
+      - "File-Based State Management"
+      - "Workspace Isolation"
+    key_concepts:
+      - "Transient state → files, permanent state → database"
+      - "Per-agent workspaces eliminate race conditions"
+      - "Filesystem is the message bus"
+    contributor: "Sean Erikson, Cloud Nirvana"
 
   - id: email-triage-priority-chain
     name: "Email Triage with Priority Chain"
@@ -125,15 +102,46 @@ patterns:
     category: agentic-architecture
     difficulty: intermediate
     path: "patterns/agentic-architecture/email-triage-priority-chain.md"
-    status: draft
+    status: published
+    also_known_as:
+      - "Firewall-Style Routing"
+      - "First-Match Classification"
+    key_concepts:
+      - "Five-rule priority chain: Named Agent → Support Ticket → Special Sender → Domain → Content"
+      - "First match wins, prevents rule conflicts"
+      - "High-confidence rules before fuzzy matching"
+    contributor: "Sean Erikson, Cloud Nirvana"
 
-  - id: cross-session-context-bridging
-    name: "Cross-Session Context Bridging"
-    intent: "Safely share information between private and shared agent sessions without leaking sensitive data."
+  - id: hybrid-memory-retrieval
+    name: "Hybrid Memory Retrieval"
+    intent: "Combine vector search, keyword search, and reranking to improve agent memory recall."
     category: agentic-architecture
     difficulty: intermediate
-    path: "patterns/agentic-architecture/cross-session-context-bridging.md"
-    status: identified
+    path: "patterns/agentic-architecture/hybrid-memory-retrieval.md"
+    status: published
+    key_concepts:
+      - "Vector search (concepts) + BM25 (exact matches) + MMR reranking (diversity)"
+      - "Temporal decay favors recent context"
+      - "Deployed but not validated: honest about tuning gaps"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: context-lifecycle-management
+    name: "Context Lifecycle Management"
+    intent: "Ensure persistent AI agents never lose critical context due to context window limits by implementing tiered memory, proactive checkpointing, and domain-aware compaction."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/context-lifecycle-management.md"
+    status: published
+    also_known_as:
+      - "Tiered Agent Memory"
+      - "Context Checkpointing"
+      - "Graceful Memory Degradation"
+    key_concepts:
+      - "Three memory tiers: working → session → long-term"
+      - "Proactive checkpointing at 50-60% context threshold"
+      - "Domain-aware compaction preserves strategic context"
+      - "Includes Memory Flush Discipline subsection"
+    contributor: "Sean Erikson, Cloud Nirvana"
 
   - id: per-agent-data-access-control
     name: "Per-Agent Data Access Control"
@@ -141,10 +149,100 @@ patterns:
     category: security-compliance
     difficulty: advanced
     path: "patterns/security-compliance/per-agent-data-access-control.md"
-    status: in-progress
+    status: published
+    also_known_as:
+      - "Least Privilege Database Access"
+      - "Agent Authorization Model"
     key_concepts:
       - "Encrypted database (SQLCipher) as single source of truth"
       - "Per-agent wrapper scripts with authorization rules"
       - "Immutable audit log (agent can INSERT but not UPDATE/DELETE)"
       - "Layered enforcement: wrappers now, container sandboxing later"
       - "Connects to Ladder of Trust enforcement model"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: memory-access-control-by-session-type
+    name: "Memory Access Control by Session Type"
+    intent: "Isolate agent memory access based on session context so private data doesn't leak to unintended audiences."
+    category: security-compliance
+    difficulty: advanced
+    path: "patterns/security-compliance/memory-access-control-by-session-type.md"
+    status: published
+    also_known_as:
+      - "Tiered Memory Isolation"
+      - "Per-Session Context Scoping"
+      - "Memory Classification"
+    key_concepts:
+      - "Three tiers: Private (owner only), Team (business-safe), Public"
+      - "Session-based file loading rules"
+      - "Prompt-based enforcement insufficient: structural enforcement needed"
+      - "Includes Cross-Session Context Bridging subsection"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: memory-vs-persistence-boundary
+    name: "Memory vs Persistence Boundary"
+    intent: "Know when to graduate information from agent memory files to structured database storage."
+    category: data-quality
+    difficulty: intermediate
+    path: "patterns/data-quality/memory-vs-persistence-boundary.md"
+    status: published
+    also_known_as:
+      - "Memory Graduation Pattern"
+      - "Structured Data Extraction"
+    key_concepts:
+      - "Memory files for exploration/notes, database for operational truth"
+      - "Four triggers for graduation: queried repeatedly, shared across agents, needs updates, regulatory requirement"
+      - "Email signature reconstruction failure: enforcement gap documented"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: local-first-data-architecture
+    name: "Local-First Data Architecture"
+    intent: "Sync external data sources to local storage so agents never block on network failures during live operations."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/local-first-data-architecture.md"
+    status: published
+    also_known_as:
+      - "Offline-Capable Agent Architecture"
+      - "Pre-Synced Data Layer"
+    key_concepts:
+      - "One-way sync: external sources → local database → agent queries"
+      - "Sync runs daily (batch), agents query local (instant)"
+      - "WiFi failure doesn't break live demos or operations"
+      - "Includes Multi-Source Identity Resolution prerequisite"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: multi-source-memory-architecture
+    name: "Multi-Source Memory Architecture"
+    intent: "Structure agent memory across multiple sources with different lifetimes, audiences, and update patterns so agents can find the right information without drowning in noise."
+    category: rag-knowledge
+    difficulty: intermediate
+    path: "patterns/rag-knowledge/multi-source-memory-architecture.md"
+    status: published
+    also_known_as:
+      - "Tiered Memory"
+      - "Memory Separation of Concerns"
+      - "Multi-Tier Agent Memory"
+    key_concepts:
+      - "Five sources: MEMORY.md (curated long-term), daily logs (7-30 day retention), TEAM-CONTEXT.md (team-safe), operational docs (authoritative), session checkpoints (strategic snapshots)"
+      - "Per-session loading rules (private vs team vs cron sessions)"
+      - "Weekly distillation workflow from daily logs to MEMORY.md"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: local-llm-classification-layer
+    name: "Local LLM as Classification Layer"
+    intent: "Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination."
+    category: cost-operations
+    difficulty: intermediate
+    path: "patterns/cost-operations/local-llm-classification-layer.md"
+    status: published
+    also_known_as:
+      - "Tiered Model Selection"
+      - "Local Inference for Classification"
+      - "Hybrid Classification Pipeline"
+    key_concepts:
+      - "Hybrid: deterministic rules (60-70%) → local LLM (30-40%) → cloud model execution"
+      - "Reasoning quality > speed for classification"
+      - "Qwen 3 8B with thinking mode: 12/12 accuracy, $0 cost per classification"
+      - "Hardware: Mac Mini M4 24GB, Ollama, ~6GB RAM for 8B model"
+    contributor: "Sean Erikson, Cloud Nirvana"

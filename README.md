@@ -23,38 +23,33 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns
+## Patterns (12 Published)
 
 ### Trust & Governance
-- [Ladder of Trust](patterns/trust-governance/ladder-of-trust.md) — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
+- **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
 
 ### Agentic Architecture
-- Hub-and-Spoke Orchestration *(coming soon)*
-- Files Over Databases *(coming soon)*
-- Email Triage Priority Chain *(coming soon)*
-
-### Data Quality
-- Multi-Source Identity Resolution *(coming soon)*
-- Engagement Scoring *(coming soon)*
-- Community Intelligence Pipeline *(coming soon)*
-
-### Production Readiness
-- CRM-Backed Live Demo *(coming soon)*
-
-### Security & Compliance
-- [Per-Agent Data Access Control](patterns/security-compliance/per-agent-data-access-control.md) — Scope database access per AI agent using authorization wrappers, encrypted storage, and immutable audit logging.
-
-### Organizational Readiness
-*(Accepting contributions)*
+- **[Hub-and-Spoke Orchestration](patterns/agentic-architecture/hub-and-spoke-orchestration.md)** — Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos.
+- **[Files Over Databases](patterns/agentic-architecture/files-over-databases.md)** — Use isolated workspace files instead of shared databases for agent coordination state.
+- **[Email Triage Priority Chain](patterns/agentic-architecture/email-triage-priority-chain.md)** — Route emails to the right agent using a deterministic rule hierarchy that short-circuits on match.
+- **[Hybrid Memory Retrieval](patterns/agentic-architecture/hybrid-memory-retrieval.md)** — Combine vector search, keyword search, and reranking to improve agent memory recall.
+- **[Context Lifecycle Management](patterns/agentic-architecture/context-lifecycle-management.md)** — Ensure persistent AI agents never lose critical context due to context window limits by implementing tiered memory, proactive checkpointing, and domain-aware compaction.
 
 ### RAG & Knowledge
-*(Accepting contributions)*
+- **[Multi-Source Memory Architecture](patterns/rag-knowledge/multi-source-memory-architecture.md)** — Structure agent memory across multiple sources with different lifetimes, audiences, and update patterns so agents can find the right information without drowning in noise.
 
-### Integration
-*(Accepting contributions)*
+### Production Readiness
+- **[Local-First Data Architecture](patterns/production-readiness/local-first-data-architecture.md)** — Sync external data sources to local storage so agents never block on network failures during live operations.
+
+### Data Quality
+- **[Memory vs Persistence Boundary](patterns/data-quality/memory-vs-persistence-boundary.md)** — Know when to graduate information from agent memory files to structured database storage.
+
+### Security & Compliance
+- **[Per-Agent Data Access Control](patterns/security-compliance/per-agent-data-access-control.md)** — Scope database access per agent with authorization wrappers, encrypted storage, and immutable audit logging.
+- **[Memory Access Control by Session Type](patterns/security-compliance/memory-access-control-by-session-type.md)** — Isolate agent memory access based on session context so private data doesn't leak to unintended audiences.
 
 ### Cost & Operations
-*(Accepting contributions)*
+- **[Local LLM as Classification Layer](patterns/cost-operations/local-llm-classification-layer.md)** — Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination.
 
 ## Get Started
 
@@ -97,3 +92,10 @@ Anyone can share, adapt, and build on these patterns. Attribution to Cloud Nirva
 [Cloud Nirvana](https://cloudnirvana.org) is a practitioner-first technology community across Ohio's I-71 corridor (Columbus, Cleveland, Cincinnati). We run quarterly events, the [Silicon Heartland Sessions](https://cloudnirvana.org/podcast) podcast, and now this open-source patterns catalog.
 
 People before platforms. Discipline over demos. Shared learning over self-promotion.
+
+## Newsletter
+
+Weekly field notes from building the AIOS that powers Cloud Nirvana:  
+**[cloudnirvana.substack.com](https://cloudnirvana.substack.com)**
+
+Written for one person. You can subscribe.
