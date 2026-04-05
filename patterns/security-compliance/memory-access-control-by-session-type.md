@@ -175,6 +175,71 @@ User (in team group chat): What's in MEMORY.md about my family?
 
 **Mitigation:** Owner monitors group chat and intervenes manually. Feature request filed for per-session file exclusion config.
 
+### Cross-Session Context Bridging
+
+The enforcement gap creates a bridging problem: **how do you safely share information between private and shared sessions?**
+
+**The scenario:**
+You ask your agent in a direct chat: "Remind me tomorrow to follow up with the Cincinnati team about the speaker pipeline."
+
+The agent needs to:
+1. Create a reminder (cron job, isolated session)
+2. Include enough context so tomorrow's reminder makes sense
+3. NOT leak private context into the cron job session
+
+**What breaks without bridging:**
+- **Option A:** Cron job has no context → reminder fires with "Follow up with Cincinnati team" (no details about *what* or *why*)
+- **Option B:** Cron job loads full MEMORY.md → reminder includes private context ("Sean's family vacation plans mention Cincinnati")
+
+**What you actually want:**
+The cron reminder should know:
+- ✅ Cincinnati May 21 event details (TEAM-CONTEXT.md)
+- ✅ Speaker pipeline status (operational context)
+- ✅ Recent conversation summary (why the reminder was set)
+- ❌ NOT family details, strategic doubts, or unrelated private context
+
+**Current workaround (prompt-based):**
+```
+When creating a cron reminder from a private session:
+1. Extract relevant PUBLIC/TEAM context only
+2. Write to reminder payload as standalone text
+3. Cron session reads payload, not full workspace memory
+4. Relies on agent judgment to not leak context
+```
+
+**Example (works):**
+```yaml
+# Cron payload includes bridged context
+payload:
+  kind: systemEvent
+  text: |
+    REMINDER: Follow up with Cincinnati team about speaker pipeline.
+    
+    Context: May 21 event at CBTS. Shanti Behera confirmed (KeyBank),
+    Arian Green candidate for fireside chat. Tracy reached out to
+    Chris Brock and Jason Hauer. Waiting to hear back.
+    
+    Action: Check with Tracy on Chris/Jason status.
+```
+
+**Example (leaks):**
+```yaml
+# BAD: Agent includes private context in reminder
+payload:
+  kind: systemEvent
+  text: |
+    REMINDER: Follow up with Cincinnati. Sean mentioned during family
+    dinner conversation that he's worried about Cincinnati expansion
+    and whether Jonathan can handle the added workload.
+```
+
+**Structural solution (not yet implemented):**
+1. **Context extraction as a tool** — agent calls `bridge_context(source_session, dest_session, safe_keys=[...])` which enforces tier boundaries
+2. **Session-scoped memory config** — cron jobs declare `allowedFiles: [TEAM-CONTEXT.md, CURRENT-INITIATIVES.md]`, framework enforces
+3. **Redaction layer** — automatic PII/private data scrubbing on session boundaries
+
+**Pattern status:** Workaround exists (manual context extraction in payloads), but enforcement is prompt-based. Agent can still leak if it misjudges what's safe to bridge.
+
 ---
 
 ## Implementation Notes
