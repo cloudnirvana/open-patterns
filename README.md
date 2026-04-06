@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (14 Published)
+## Patterns (15 Published)
 
 ### Trust & Governance
 - **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
@@ -40,6 +40,7 @@ Each pattern has three layers. Read as deep as your role requires:
 
 ### Production Readiness
 - **[System Hygiene for Agentic Systems](patterns/production-readiness/system-hygiene-for-agentic-systems.md)** — Pre/post-upgrade procedures, regression testing, and health validation to prevent platform breakage.
+- **[Business Continuity & Disaster Recovery](patterns/production-readiness/business-continuity-disaster-recovery.md)** ⚠️ — Backup strategy, versioning, recovery scenarios, and RTO/RPO planning. **In progress, seeking practitioner input.**
 - **[Local-First Data Architecture](patterns/production-readiness/local-first-data-architecture.md)** — Sync external data sources to local storage so agents never block on network failures during live operations.
 - **[REM Cycle: Nightly Maintenance](patterns/production-readiness/rem-cycle-nightly-maintenance.md)** — Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle.
 

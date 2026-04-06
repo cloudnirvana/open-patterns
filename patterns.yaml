@@ -215,6 +215,26 @@ patterns:
       - "Never upgrade before critical work (demos, launches, deadlines)"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: business-continuity-disaster-recovery
+    name: "Business Continuity & Disaster Recovery for Agent Systems"
+    intent: "Ensure agent-dependent operations can resume within acceptable timeframes when platform failures, data corruption, or human error cause production outages."
+    category: production-readiness
+    difficulty: advanced
+    path: "patterns/production-readiness/business-continuity-disaster-recovery.md"
+    status: in-progress
+    also_known_as:
+      - "Backup & Recovery"
+      - "System Resilience"
+      - "Operational Continuity"
+    key_concepts:
+      - "Backup strategy: what, how often, where, retention policy"
+      - "Versioning: config snapshots, database versions, dependency pinning"
+      - "Recovery scenarios: platform failure, corruption, human error, total loss"
+      - "RTO/RPO: recovery time and data loss objectives"
+      - "Testing: quarterly restore drills validate backups work"
+      - "SEEKING PRACTITIONER INPUT: share your disaster recovery experiences"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
   - id: local-first-data-architecture
     name: "Local-First Data Architecture"
     intent: "Sync external data sources to local storage so agents never block on network failures during live operations."
