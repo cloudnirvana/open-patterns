@@ -195,6 +195,26 @@ patterns:
       - "Email signature reconstruction failure: enforcement gap documented"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: system-hygiene-for-agentic-systems
+    name: "System Hygiene for Agentic Systems"
+    intent: "Establish systematic pre/post-upgrade procedures, regression testing, and health validation to prevent production breakage when the underlying platform changes."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/system-hygiene-for-agentic-systems.md"
+    status: published
+    also_known_as:
+      - "Platform Maintenance"
+      - "Upgrade Safety"
+      - "Change Management for AI Systems"
+    key_concepts:
+      - "Pre-upgrade: read release notes, backup config, identify breaking changes"
+      - "Test environment: validate in isolated session before production"
+      - "Regression suite: smoke tests for critical paths (email, cron, tools)"
+      - "Post-upgrade: health checks, error logs, 24h monitoring"
+      - "Rollback plan: documented reversion procedure"
+      - "Never upgrade before critical work (demos, launches, deadlines)"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
   - id: local-first-data-architecture
     name: "Local-First Data Architecture"
     intent: "Sync external data sources to local storage so agents never block on network failures during live operations."
