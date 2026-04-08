@@ -269,25 +269,86 @@ Do NOT use when:
 
 **The highest-value content is most vulnerable.** Strategic conversations fill context fast (long exchanges, deep reasoning) and are the *least* recoverable from compaction (nuance, emotional context, evolving thinking). The pattern must prioritize protecting exactly the content that's hardest to recreate.
 
-### Memory Flush Discipline: "If It's Not Written, It Doesn't Exist"
+### Memory Flush Discipline: Continuous Append, Not End-of-Session Batch
 
-Context lifecycle management requires a foundational discipline: **ephemeral context must be promoted to durable storage, or it will be lost.**
+Context lifecycle management requires a foundational discipline: **ephemeral context must be promoted to durable storage immediately, or it will be lost.**
 
 Session context *feels* stateful—agents remember recent exchanges, decisions, data. But this memory is temporary. When compaction fires, anything not written to a file is at risk.
 
-**The rule:** If it matters beyond this session, write it to a file immediately.
+**The rule:** If it matters beyond this session, write it to a file **immediately after it happens**—not at end of session.
+
+#### The Failure of "End-of-Session Flush"
+
+**What we tried first (and why it failed):**
+
+Original approach: "At the end of significant sessions, flush key decisions and context to daily notes."
+
+**Why it doesn't work:**
+- **Vague trigger:** What's a "significant session"? Who decides? When?
+- **Manual discipline:** Relies on agent remembering to do it (agents don't remember across compaction)
+- **Batch operation:** Write everything at once at the end (easy to skip, easy to forget)
+- **Session boundaries are unclear:** When does a session "end"? After `/reset`? After 2 hours? When user stops responding?
+
+**Real failure (April 8, 2026):**
+
+Lou drafted an email to Chris Slee and Michael Liang referencing "Sunday night" AI Tinkerers demo. Actual date: Monday, April 6.
+
+**Root cause:**
+- AI Tinkerers outcomes (met Chris/Michael, locked for Columbus fireside) were captured in session context on April 6
+- Context got compressed when new session started April 7
+- Details (exact date, who was met) were lost in compression
+- April 8: Lou inferred "Sunday night" from vague temporal reasoning instead of reading source of truth
+- Email had wrong date
+
+**Why end-of-session flush didn't happen:**
+- Session ran late (midnight)
+- "I'll write it tomorrow" → forgot
+- No forcing function, no automation, no accountability
+
+#### The Fix: Continuous Memory Append
+
+**New approach:** Write outcomes to files **immediately after they happen**—one line per outcome, low friction, high impact.
+
+**When to append (mandatory triggers):**
+
+| Event | Append To | Example |
+|-------|-----------|----------|
+| **Email sent** | `memory/YYYY-MM-DD.md` | `- Sent fireside prep email to Chris Slee + Michael Liang (Columbus May 20, met at AI Tinkerers April 6)` |
+| **Person met** | `memory/YYYY-MM-DD.md` | `- Met Michaela at CincyAI 4/7, she asked about agentic task management → inspired Notion integration` |
+| **Decision made** | `memory/YYYY-MM-DD.md` or `MEMORY.md` | `- Decided: Continuous Memory Append replaces end-of-session flush (April 8)` |
+| **Task completed** | `memory/YYYY-MM-DD.md` | `- Built Notion Speaker Pipeline database: 14 speakers, 9 tasks created` |
+| **Database/Notion updated** | `memory/YYYY-MM-DD.md` | `- Updated Shanti Behera status to Confirmed in Speaker Pipeline` |
+| **Calendar event created** | `memory/YYYY-MM-DD.md` | `- Scheduled pattern shaping meeting with Arian Green for April 12` |
+| **Draft created** | `memory/YYYY-MM-DD.md` + Gmail drafts | `- Drafted Ben Baker intro email (r-2948032469631096872)` |
+
+**How (one-line append):**
+```bash
+echo "- [outcome in one line]" >> memory/$(date +%Y-%m-%d).md
+```
+
+**Example (real implementation):**
+```bash
+# After sending fireside email
+echo "- Sent fireside prep email to Chris Slee + Michael Liang (Columbus May 20, met at AI Tinkerers April 6)" >> memory/2026-04-08.md
+
+# After meeting someone
+echo "- Met Michaela at CincyAI 4/7, asked about agentic task management → inspired Notion integration" >> memory/2026-04-08.md
+
+# After making a decision
+echo "- Decided: REM Cycle timeout increased from 60s to 180s (was hitting limit on nightly runs)" >> memory/2026-04-08.md
+```
 
 **What gets flushed (and where):**
 
 | Content Type | Flush Target | Timing | Why |
 |--------------|--------------|--------|-----|
-| **Decisions** | Daily notes (`memory/YYYY-MM-DD.md`) | End of session or when made | Decisions shape future work; compaction erases decision context |
-| **Strategic insights** | `MEMORY.md` (long-term) | When you learn something new | Prevents re-learning the same lessons after compaction |
-| **Open threads** | Daily notes or session checkpoints | When context crosses 50% | Ensures "where we left off" survives compaction |
-| **Email drafts** | Gmail drafts API + `PENDING-APPROVALS.md` | Immediately after creation | Drafts in context-only disappear after compaction |
-| **Speaker pipeline updates** | `docs/operations/SPEAKER-PIPELINE-Q2-2026.md` | When status changes | Prevents "who did we reach out to?" re-queries |
-| **CRM/database changes** | SQLite writes via wrappers | Transaction-time | Data in context but not persisted = data loss |
-| **Config/template changes** | Version-controlled files (`EMAIL-SIGNATURES.md`) | When updated | Stale context causes agents to use old versions |
+| **Decisions** | Daily notes (`memory/YYYY-MM-DD.md`) | **Immediately when made** | Decisions shape future work; compaction erases decision context |
+| **Strategic insights** | `MEMORY.md` (long-term) | **When you learn something new** | Prevents re-learning the same lessons after compaction |
+| **Open threads** | Daily notes | **When context crosses 50%** | Ensures "where we left off" survives compaction |
+| **Email drafts** | Gmail drafts API + `PENDING-APPROVALS.md` | **Immediately after creation** | Drafts in context-only disappear after compaction |
+| **Speaker pipeline updates** | Notion Speaker Pipeline database | **When status changes** | Notion is source of truth, not markdown files |
+| **CRM/database changes** | SQLite writes via wrappers | **Transaction-time** | Data in context but not persisted = data loss |
+| **Config/template changes** | Version-controlled files (`EMAIL-SIGNATURES.md`) | **When updated** | Stale context causes agents to use old versions |
 
 **What NOT to flush:**
 - API responses after processing (Gmail threads, Eventbrite raw JSON)
@@ -296,49 +357,65 @@ Session context *feels* stateful—agents remember recent exchanges, decisions, 
 
 **Examples:**
 
-**Good (flush discipline):**
+**Good (continuous append):**
 ```markdown
-# memory/2026-04-04.md
+# memory/2026-04-08.md
 
-## Tracy Email - Cincinnati Speakers
-- Tracy reached out to Chris Brock and Jason Hauer (April 4)
-- Updated speaker pipeline: both marked "outreach sent"
-- Waiting to hear back
-
-## Decisions
-- Removed Multi-Source Identity Resolution from pattern catalog (not pattern-worthy, basic DB normalization)
-- Added identity resolution as subsection of Local-First Data Architecture pattern
+- Built Notion workspace for AIOS task management (triggered by Michaela's question at CincyAI 4/7)
+- Created Speaker Pipeline database: 14 speakers across 3 May events
+- Created AIOS Tasks database: 9 follow-up tasks
+- REM Cycle timeout increased from 60s to 180s (was failing nightly)
+- Documented matrix mode command: `openclaw gateway --verbose`
+- Updated AGENTS.md with Continuous Memory Append pattern (replaces end-of-session flush)
 ```
 
-Next session, the agent reads `memory/2026-04-04.md` and knows Tracy's status update and the pattern catalog decision. Compaction can't erase what's written.
+**Each line written immediately after the outcome happened.** Not at end of session—during the session, as work progressed.
 
-**Bad (relying on context):**
+**Bad (relying on context or end-of-session):**
 ```
-Agent (internal thought): "Tracy emailed about Chris and Jason. I'll remember that."
-[No file write]
-[Compaction fires 2 hours later]
-[Next session: "Did Tracy reach out to anyone?"] 
-→ Agent has no record, has to ask user or re-search email
+Agent (internal thought): "We built Notion integration tonight. I'll write it down later."
+[Session runs until midnight]
+[User says goodnight]
+[Agent forgets to flush]
+[Session ends, context compressed]
+[Next session: "Did we set up Notion?" → Agent has no record]
 ```
 
-**When to flush:**
+**Why continuous append works:**
 
-1. **Immediately:** Database writes, file edits, email drafts (transaction-time persistence)
-2. **End of session:** Daily notes with decisions, insights, open threads
-3. **Before compaction risk:** Session checkpoints when context crosses 50-60%
-4. **Weekly:** Distill daily notes into `MEMORY.md` long-term memory
+1. **Low friction:** Single `echo` command, one line, no ceremony
+2. **Immediate:** Happens when context is fresh, details are accurate
+3. **Incremental:** Build memory file throughout session, not all at once
+4. **Survives interruption:** If session dies unexpectedly, outcomes up to that point are saved
+5. **No discipline required:** If you complete work and don't append, you WILL forget—consequences are immediate and obvious
+
+**Enforcement:**
+
+Continuous append is **mandatory** in `AGENTS.md`. Agents are required to append after every significant outcome. Not optional.
+
+**Phase-out:**
+
+End-of-session checklist still exists (for sessions where continuous append was forgotten), but it's a backup, not the primary mechanism.
+
+Checkpoint automation (Layer 3 enforcement) still creates session snapshots at 75% context or on `/reset`, but continuous append reduces reliance on checkpoints.
+
+**Pattern evolution:**
+- **Version 1 (March 2026):** End-of-session flush → failed in practice
+- **Version 2 (April 2026):** Continuous append → working in production
 
 **Why this matters:**
 
 Compaction isn't the only risk. Sessions end. Agents restart. Gateway processes restart. **If important context lives only in session memory, it's ephemeral by definition.**
 
 The discipline is simple:
-- Decision made? Write it.
-- Insight learned? Write it.
-- Status changed? Write it.
-- Thread unresolved? Write it.
+- Decision made? Append it.
+- Person met? Append it.
+- Email sent? Append it.
+- Task completed? Append it.
 
 Memory flush discipline is the foundation that makes context lifecycle management work. Without it, even the best tiered memory architecture will lose data because nothing was promoted from working memory to durable storage.
+
+**Continuous append ensures promotion happens in real time, not in theory.**
 
 ---
 
