@@ -269,6 +269,25 @@ patterns:
       - "Weekly distillation workflow from daily logs to MEMORY.md"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: context-cost-control
+    name: "Context Cost Control for Multi-Agent Systems"
+    intent: "Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene."
+    category: cost-operations
+    difficulty: intermediate
+    path: "patterns/cost-operations/context-cost-control.md"
+    status: published
+    also_known_as:
+      - "Cost Optimization for Agent Memory"
+      - "Token Cost Reduction"
+      - "Memory Hygiene Discipline"
+    key_concepts:
+      - "6-layer strategy: model selection, retrieval tuning, index pruning, memory hygiene, cron auditing, bootstrap discipline"
+      - "Tested: $1,800/mo → $120/mo (93% cost reduction)"
+      - "QMD snippet limits: 3 results, 400 chars/snippet, 2K injection cap (71% reduction per search)"
+      - "Weekly distillation with auto-archive prevents unbounded growth"
+      - "Implementation checklist: 4-week rollout"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
   - id: local-llm-classification-layer
     name: "Local LLM as Classification Layer"
     intent: "Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination."
