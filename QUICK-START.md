@@ -12,7 +12,7 @@ The Open Patterns Initiative is an open-source catalog of engineering patterns f
 
 ---
 
-## The 9 Pattern Categories
+## The 7 Pattern Categories
 
 | # | Category | What It Covers |
 |---|----------|---------------|
@@ -21,10 +21,8 @@ The Open Patterns Initiative is an open-source catalog of engineering patterns f
 | 3 | **RAG & Knowledge** | Retrieval, chunking, search, knowledge management |
 | 4 | **Production Readiness** | Failures, fallbacks, offline operation, deployment |
 | 5 | **Data Quality** | Identity resolution, dedup, enrichment, validation |
-| 6 | **Organizational Readiness** | Team onboarding, governance, AI adoption |
-| 7 | **Integration** | Legacy systems, APIs, event-driven architecture |
-| 8 | **Cost & Operations** | Token management, monitoring, scaling, scheduling |
-| 9 | **Security & Compliance** | Credentials, PII, trust boundaries, audit |
+| 6 | **Cost & Operations** | Token management, monitoring, scaling, scheduling |
+| 7 | **Security & Compliance** | Credentials, PII, trust boundaries, audit |
 
 ---
 
@@ -48,7 +46,7 @@ Every pattern follows this structure. Copy it and fill it in.
 
 | Property | Value |
 |----------|-------|
-| **Category** | [from the 9 categories above] |
+| **Category** | [from the 7 categories above] |
 | **Difficulty** | [Foundational / Intermediate / Advanced] |
 | **Also Known As** | [Alternative names, if any] |
 

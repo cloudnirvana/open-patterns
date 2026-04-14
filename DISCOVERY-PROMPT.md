@@ -16,17 +16,15 @@ First, read these files from the Open Patterns repo:
 3. patterns/trust-governance/ladder-of-trust.md — a reference pattern showing the expected quality and depth
 
 Then scan our system (codebase, architecture docs, configuration, deployment scripts) and identify
-implementations that match any of these 9 pattern categories:
+implementations that match any of these 7 pattern categories:
 
 1. Trust & Governance — permissions, approvals, human oversight, progressive autonomy
 2. Agentic Architecture — agent coordination, orchestration, state management
 3. RAG & Knowledge — retrieval, chunking, search, knowledge management
 4. Production Readiness — failures, fallbacks, offline operation, deployment
 5. Data Quality — identity resolution, dedup, enrichment, validation
-6. Organizational Readiness — team onboarding, governance, AI adoption
-7. Integration — legacy systems, APIs, event-driven architecture
-8. Cost & Operations — token management, monitoring, scaling, scheduling
-9. Security & Compliance — credentials, PII, trust boundaries, audit
+6. Cost & Operations — token management, monitoring, scaling, scheduling
+7. Security & Compliance — credentials, PII, trust boundaries, audit
 
 For each pattern you identify:
 1. Draft a complete pattern card following PATTERN-TEMPLATE.md
