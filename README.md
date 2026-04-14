@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (15 Published)
+## Patterns (16 Published)
 
 ### Trust & Governance
 - **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
@@ -52,6 +52,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[Memory Access Control by Session Type](patterns/security-compliance/memory-access-control-by-session-type.md)** — Isolate agent memory access based on session context so private data doesn't leak to unintended audiences.
 
 ### Cost & Operations
+- **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene. Tested: $1,800/mo → $120/mo (93% reduction).
 - **[Local LLM as Classification Layer](patterns/cost-operations/local-llm-classification-layer.md)** — Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination.
 
 ## Get Started
