@@ -143,6 +143,24 @@ patterns:
       - "Includes Memory Flush Discipline subsection"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: deterministic-session-key-routing
+    name: "Deterministic Session-Key Routing for Multi-Channel Agents"
+    intent: "Route every incoming agent event through a deterministic session key so channel, agent, user, thread, authority, and transcript state stay separate and recoverable."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/deterministic-session-key-routing-for-multi-channel-agents.md"
+    status: published
+    also_known_as:
+      - "Deterministic Session Routing"
+      - "Channel-Scoped Agent Sessions"
+      - "Event-to-Transcript Routing"
+    key_concepts:
+      - "One secure gateway can route work into multiple operating lanes"
+      - "Session keys bind channel, actor, thread, and agent role to session state"
+      - "Append-only transcripts support debugging, compaction, and recovery"
+      - "Channel and role authority should be applied before memory or tools load"
+    contributor: "Kalen Howell Sr"
+
   - id: per-agent-data-access-control
     name: "Per-Agent Data Access Control"
     intent: "Scope database access per agent with authorization wrappers, encrypted storage, and immutable audit logging."
