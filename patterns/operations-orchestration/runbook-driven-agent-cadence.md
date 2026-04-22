@@ -223,7 +223,7 @@ Each agent gets:
 
 | Organization | Context | Scale |
 |--------------|---------|-------|
-| Cloud Nirvana AIOS | 11-agent system with Lou as Chief of Staff running 5x daily cadence, Notion-backed runbook | Production, 60+ days |
+| Cloud Nirvana AIOS | 11-agent system with Lou as Chief of Staff running 7x daily cadence, Notion-backed runbook. Consolidated 25 crons down to 5 (80% reduction) by adopting runbook-driven execution. Newsletter, email archive, and memory distillation folded into Lou's single runbook. | Production, 60+ days |
 
 ---
 
