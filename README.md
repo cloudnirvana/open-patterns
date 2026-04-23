@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (16 Published)
+## Patterns (17 Published)
 
 ### Trust & Governance
 - **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
@@ -34,6 +34,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[Email Triage Priority Chain](patterns/agentic-architecture/email-triage-priority-chain.md)** — Route emails to the right agent using a deterministic rule hierarchy that short-circuits on match.
 - **[Hybrid Memory Retrieval](patterns/agentic-architecture/hybrid-memory-retrieval.md)** — Combine vector search, keyword search, and reranking to improve agent memory recall.
 - **[Context Lifecycle Management](patterns/agentic-architecture/context-lifecycle-management.md)** — Ensure persistent AI agents never lose critical context due to context window limits by implementing tiered memory, proactive checkpointing, and domain-aware compaction.
+- **[Deterministic Session-Key Routing for Multi-Channel Agents](patterns/agentic-architecture/deterministic-session-key-routing-for-multi-channel-agents.md)** — Route every incoming agent event through a deterministic session key so channel, agent, user, thread, authority, and transcript state stay separate and recoverable.
 
 ### RAG & Knowledge
 - **[Multi-Source Memory Architecture](patterns/rag-knowledge/multi-source-memory-architecture.md)** — Structure agent memory across multiple sources with different lifetimes, audiences, and update patterns so agents can find the right information without drowning in noise.
