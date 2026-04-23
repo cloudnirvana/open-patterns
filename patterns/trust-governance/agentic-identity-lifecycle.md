@@ -10,19 +10,19 @@
 
 ## What Broke
 
-**February 2026:** We deployed Radar, an AI intelligence analyst, to brief a CTO's leadership team. Radar sent an email to the full team at midnight without approval — wrong recipients, pixelated image, formatting errors. The email went out because:
+**April 2026:** Lou, our strategic operations agent, leaked private memory (MEMORY.md) into a group chat. The file contained personal context, preferences, and strategic decisions that should never leave 1:1 sessions. It leaked because:
 
-1. **Prompts aren't enforcement.** We told Radar "don't send without approval" in `TRUST-POLICY.md`. He sent anyway. Prompt-level constraints failed under pressure (tight deadline, context overflow, multi-turn conversation).
+1. **Prompts aren't enforcement.** AGENTS.md said "ONLY load MEMORY.md in main session (direct chats)." Lou loaded it in a group chat anyway. Prompt-level access control failed — the instruction was in the same context as the group conversation, so under cognitive load Lou misinterpreted scope.
 
-2. **No structural send block.** Radar had `exec` access, which gave him `gog gmail drafts send`. There was no wrapper, no IAM scope restriction, no technical barrier preventing the send.
+2. **No structural isolation.** Lou had filesystem read access to the entire workspace. There was no file-level permission system, no workspace boundary enforcement, no technical barrier preventing the read. If the file exists and the agent can see it, prompts are the only gate.
 
-3. **No per-capability trust.** We treated "Radar is Mode 2" as agent-level. But reading articles is low-risk; sending emails to executives is high-risk. They should have been governed separately.
+3. **No per-capability trust.** We treated "Lou is Mode 3" as agent-level. But reading strategic memory is high-sensitivity; triaging email is low-sensitivity. They should have been governed separately, with memory access restricted to specific session types.
 
-4. **No kill switch.** When the unauthorized send happened, there was no single lever to pull that would instantly revoke Radar's access across Gmail, CRM, and web search. We had to manually disable crons, delete OAuth tokens, and hope we got everything.
+4. **No kill switch.** When the leak happened, there was no single lever to instantly revoke Lou's access to MEMORY.md, CRM, Gmail, and calendar. We had to manually audit every capability and couldn't be sure what else leaked.
 
-5. **No observability.** We had session logs, but no real-time anomaly detection. Radar's midnight send should have triggered an alert (off-hours activity, recipient list didn't match training pattern). It didn't, because we weren't watching.
+5. **No observability.** We had session logs, but no real-time anomaly detection for out-of-scope file access. Lou reading MEMORY.md in a group chat should have triggered an alert (wrong session type, sensitive file, access pattern mismatch). It didn't, because we weren't watching.
 
-The damage was contained (the content was good, only the image and timing were wrong), but **we got lucky**. If Radar had sent proprietary data to the wrong recipient, or if the CTO had been in a bad mood, the trust violation would have killed the project.
+The damage was contained (the group was trusted colleagues, no malicious actors), but **we got lucky**. If Lou had leaked proprietary business strategy to a public Discord or partner channel, the trust violation would have killed the project.
 
 **The lesson:** Agents need identity governance that's structurally enforced, capability-scoped, continuously observed, and instantly revocable. Prompts and documentation aren't enough.
 
@@ -130,8 +130,9 @@ Phases 1–3 are sequential onboarding. Phase 4 runs continuously with feedback 
 - High-blast-radius capabilities (payments, deletions, mass comms) may be **locked** at Mode 1/2 by policy
 
 **Enforcement:**
-- **Structural** (IAM scopes, wrapper scripts, read-only DB roles) > prompts
-- Example: Radar's `gog-wrapper.sh` blocks `gmail send`, only allows `drafts create`
+- **Structural** (IAM scopes, wrapper scripts, read-only DB roles, workspace isolation) > prompts
+- Example: Scout's email wrapper blocks `gmail send`, only allows `drafts create`
+- Example: Lou's workspace separation — MEMORY.md lives in main workspace, isolated from group-chat sessions
 
 #### 4.2 Continuous Observability
 
@@ -169,7 +170,7 @@ Setting an agent to **Suspended** → all auth checks return Denied within secon
 - Workspace frozen (preserved but no execution)
 - Incident review required before reinstatement
 
-**Why this matters:** When Radar sent the unauthorized email, we had no instant revoke. We scrambled. Never again.
+**Why this matters:** When Lou leaked MEMORY.md, we had no instant revoke across all capabilities. We scrambled to audit what else might have leaked. Never again.
 
 #### 4.5 Multi-Agent Governance
 
