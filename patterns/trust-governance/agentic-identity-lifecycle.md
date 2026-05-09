@@ -28,6 +28,56 @@ The damage was contained (the group was trusted colleagues, no malicious actors)
 
 ---
 
+## What Broke (Part 2): Scout's First Day in Production
+
+**May 2026:** Scout, our partnership pipeline agent, was brought online to process partner inquiry emails autonomously. The test: a partnership inquiry arrives in Scout's folder, Scout reads it, drafts a threaded response, and presents it for review. Simple workflow. It took **11 cron runs and 2+ hours** to produce one approved draft. Here's why.
+
+### The Foundation Gap
+
+Scout's AGENTS.md was written independently from the strategic agent's (Lou's) operating manual. Lou's AGENTS.md had battle-tested rules accumulated over 3 months:
+- System of Record enforcement (never use data from memory in external comms)
+- MCP-only tool access (structural wrappers that enforce CRM verification, threading, style)
+- Task completion workflow (acknowledge → update system of record → verify → log)
+- Threading enforcement (replies must reference the original message)
+
+Scout's AGENTS.md had *none of these*. It was written as a standalone document with its own rules, its own workflow, and critical gaps.
+
+### Seven Failure Modes in Two Hours
+
+1. **MCP tool gap** — The gmail-query MCP returned email metadata but not the body. Scout could see emails existed but couldn't read them. The wrapper had never been tested for the body-retrieval use case.
+
+2. **Raw tool access shortcut** — Under pressure to unblock Scout, Lou (the strategic agent) added raw `gog` (direct Gmail CLI) to Scout's exec allowlist. This bypassed every MCP enforcement guardrail. Sean caught it immediately: "WE DON'T GIVE GOG ACCESS TO AGENTS." The fix: update the MCP wrapper to return body content instead of bypassing the wrapper entirely.
+
+3. **Memory-sourced facts** — Scout drafted a response that included three partnership tiers with specific pricing ($5K/$10K/$15K per city). One tier name ("Community Champion") didn't exist. The pricing came from nowhere verifiable. Scout's AGENTS.md had no rule saying "never quote tier data from memory" because that rule lived only in Lou's AGENTS.md.
+
+4. **Orphaned threading** — Scout created a reply email that wasn't threaded to the original conversation. It was a standalone email with "Re:" in the subject. The fix: structural enforcement in the MCP — gmail-draft now rejects any subject starting with "Re:" that doesn't include `--reply-to-message-id`.
+
+5. **Permission loops** — Scout repeatedly asked "Should I draft a response?" instead of drafting one. His AGENTS.md said "Escalate gaps" but didn't say "You are the partnership expert — compose the response yourself." Every cron run (fresh session, no context carryover) restarted the permission-asking cycle.
+
+6. **Stale session state** — Each cron run spawns a fresh session. Exec allowlist changes, AGENTS.md updates, and MCP fixes only take effect in the *next* session. Every fix required triggering a new cron run and waiting 30-60 seconds. Eleven iterations.
+
+7. **Missing tool access** — Scout's workspace didn't have a symlink to the shared MCP tools directory. Relative paths (`./mcp-server/gmail-draft`) resolved to nothing. The allowlist had the correct entry, but the file didn't exist in Scout's workspace.
+
+### The Root Cause
+
+Every one of these failures traces back to the same root: **Scout skipped Phase 2 (Foundation Training).** His AGENTS.md was a standalone document that didn't inherit the operational rules Lou had built over three months. When those rules were extracted into a shared foundation (`docs/agent-onboarding/FOUNDATION.md`) and Scout's AGENTS.md was rebuilt on top of it, the next run succeeded.
+
+### What Fixed It
+
+1. **Shared foundation document** — Universal rules extracted from Lou's AGENTS.md into `FOUNDATION.md`: SoR enforcement, MCP-only access, threading, task completion, direct instruction protocol.
+
+2. **MCP structural enforcement** — Threading rule moved from documentation into the gmail-draft MCP wrapper. The tool itself rejects orphaned replies. Agents can't create the bug even if their AGENTS.md is wrong.
+
+3. **Rebuilt AGENTS.md** — Scout's operating manual rewritten with the foundation as the base layer, then role-specific partnership workflow on top. "You write the content. Do NOT ask Lou what to write."
+
+4. **Workspace infrastructure** — Symlinked shared MCP tools into Scout's workspace. Added to the onboarding checklist so every future agent gets it.
+
+5. **CRM verification for unknown contacts** — Added `--skip-verification` flag to gmail-draft MCP for new contacts not yet in CRM. Agents can still draft responses to unknown senders without being blocked, but the default remains verify-first.
+
+**The lesson:** Phase 2 (Foundation Training) isn't optional, even for agents whose Phase 3 (Domain Training) seems straightforward. The foundation carries the enforcement rules that prevent catastrophic failures. Skip it, and every agent re-discovers the same failure modes independently. Apply it, and the failures are structurally impossible.
+
+---
+
 ## The Pattern
 
 ### Overview
@@ -68,17 +118,18 @@ Phases 1–3 are sequential onboarding. Phase 4 runs continuously with feedback 
 
 ### PHASE 2: Foundation Training (Company Culture)
 
-**Objective:** Agent learns organizational values, compliance, communication standards.
+**Objective:** Agent learns organizational values, compliance, communication standards, and structural enforcement rules.
 
 **Implementation:**
 
 1. AR auto-generates `FOUNDATION.md` with mission, code of conduct, security policies, compliance scope
-2. Agent reads and demonstrates understanding
-3. Training completion logged
+2. **Shared operational rules applied to agent's AGENTS.md** — System of Record enforcement, MCP-only tool access, threading rules, task completion workflows, escalation protocols. These rules are inherited, not reinvented per agent.
+3. Agent reads and demonstrates understanding
+4. Training completion logged
 
-**Gate:** Foundation training confirmed
+**Gate:** Foundation training confirmed + AGENTS.md includes shared operational rules
 
-**Why this matters:** Agents inherit organizational context before domain-specific work. They know *how we operate* before learning *what to do*.
+**Why this matters:** Agents inherit organizational context before domain-specific work. They know *how we operate* before learning *what to do*. **When Scout skipped this phase, he invented fake data, created orphaned email threads, and asked for permission instead of executing — all failures that the foundation rules would have prevented.** (See "What Broke Part 2.")
 
 ---
 
@@ -89,16 +140,19 @@ Phases 1–3 are sequential onboarding. Phase 4 runs continuously with feedback 
 **Key Steps:**
 
 1. **Onboarding interview** — Human Liaison and agent discuss role, success criteria, escalation paths
-2. **Identity files created:**
+2. **Identity files created (layered on Phase 2 foundation):**
    - `SOUL.md` — Personality, voice
-   - `AGENTS.md` — Role, workflows, tools
+   - `AGENTS.md` — Shared foundation (Phase 2) + role-specific workflows, tools, data sources
+   - `TOOLS.md` — MCP commands, scheduling links, quick reference for the agent's domain
    - `TRUST-POLICY.md` — Per-capability trust matrix (see Phase 4)
    - `ESCALATION.md` — When to hand off to humans
-3. **First task assigned** — Real work, Mode 1 supervision
+3. **Workspace infrastructure verified** — MCP tools accessible (symlinked or full-path), exec allowlist configured with full paths to MCP wrappers only (no raw tools), cron configured if applicable
+4. **First task assigned** — Real work, Mode 1 supervision
+5. **End-to-end validation** — Agent completes full workflow autonomously: find input → read content → verify data via MCP → compose output → create artifact → report for review. Validate: no memory-sourced facts, correct threading, MCP enforcement working, scheduling links present.
 
-**Gate:** Liaison approval + task completion
+**Gate:** Liaison approval + end-to-end task completion + draft quality validation
 
-**Why this matters:** Training isn't a checkbox. It's a structured dialogue that surfaces misunderstandings before they hit production.
+**Why this matters:** Training isn't a checkbox. It's a structured dialogue that surfaces misunderstandings before they hit production. **The end-to-end validation is critical** — Scout's first 10 attempts failed on infrastructure gaps (missing symlinks, wrong search commands, stale allowlists) that only surface under real execution, not documentation review.
 
 ---
 
@@ -289,4 +343,4 @@ Agents aren't employees. They're tools with identities. Language clarity prevent
 
 **License:** CC BY 4.0
 
-**Last Updated:** 2026-04-23
+**Last Updated:** 2026-05-09
