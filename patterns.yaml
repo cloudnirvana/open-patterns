@@ -43,6 +43,40 @@ categories:
     name: "Security & Compliance"
     description: "Protecting AI systems, data, and trust boundaries"
     path: "patterns/security-compliance/"
+  - id: operations-orchestration
+    name: "Operations & Orchestration"
+    description: "Operational rhythms, task generation, execution coordination"
+    path: "patterns/operations-orchestration/"
+
+blueprints:
+  description: "Compositions of individual patterns that produce emergent operational capabilities. A pattern solves one problem. A blueprint shows how to build a whole capability."
+  path: "blueprints/"
+  entries:
+    - id: operational-cadence
+      name: "Operational Cadence"
+      intent: "Autonomous project management for hybrid human-AI teams through daily task synthesis, RACI ownership, escalation chains, and self-correcting feedback loops."
+      path: "blueprints/operational-cadence.md"
+      status: published
+      composes:
+        - runbook-driven-agent-cadence
+        - plan-of-the-day
+        - raci-scoped-notifications
+        - escalation-chain-with-sla
+        - eod-reconciliation
+      contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+    - id: strategic-program-management
+      name: "Strategic Program Management"
+      intent: "Scalable multi-agent program execution with built-in governance, trust progression, and structural enforcement across multiple concurrent workstreams."
+      path: "blueprints/strategic-program-management.md"
+      status: published
+      composes:
+        - operational-cadence
+        - ladder-of-trust
+        - per-agent-data-access-control
+        - agentic-identity-lifecycle
+        - hub-and-spoke-orchestration
+      contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
 patterns:
   - id: ladder-of-trust

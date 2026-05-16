@@ -329,7 +329,7 @@ Hub-and-spoke works well up to ~10-15 spokes. Beyond that, consider:
 
 ## Known Uses
 
-- **Cloud Nirvana AIOS:** Lou (Opus) as hub coordinating 10 spokes (Sonnet) across email, CRM, speakers, events, content, finance, community. File-based coordination, cron-driven execution. 6 weeks in production.
+- **Cloud Nirvana AIOS:** Lou (Opus) as hub coordinating 10 spokes (Sonnet) across email, CRM, speakers, events, content, finance, community. File-based coordination, cron-driven execution. 12+ weeks in production. The Cadence framework's Plan of the Day is the daily manifestation of hub-and-spoke: Lou (hub) synthesizes runbooks and event registries into a daily plan, distributes tasks to agents (spokes) via RACI assignments, and monitors execution through midday and EOD reporting.
 - **Microsoft AutoGen:** Multi-agent framework with orchestrator pattern. Agents communicate through a central conversation manager.
 - **CrewAI:** "Manager" agent pattern that delegates tasks to crew members and synthesizes results.
 - **LangGraph:** Supervisor node pattern for multi-agent workflows with conditional routing.
@@ -343,6 +343,8 @@ Hub-and-spoke works well up to ~10-15 spokes. Beyond that, consider:
 - **Context Lifecycle Management:** Hub needs the richest memory (sees all domains). Apply aggressive memory management to prevent the hub from hitting context limits.
 - **Email Triage Priority Chain:** Deterministic routing rules that handle simple cases without invoking the hub, reducing hub load.
 - **Files Over Databases:** File-based hub-spoke coordination (PENDING-APPROVALS.md) instead of message queues or databases.
+- **Plan of the Day:** The daily manifestation of hub-and-spoke. Hub generates the plan; spokes execute their assigned tasks.
+- **RACI-Scoped Notifications:** Formalizes spoke reporting responsibilities. RACI per task determines who reports what to the hub.
 - **Per-Agent Data Access Control:** Scope each spoke's data access to its domain. Prevents a compromised spoke from accessing other domains.
 - **Memory Access Control:** Hub sees all context but must classify it by audience when responding in different contexts (direct chat vs. team chat).
 
@@ -354,5 +356,5 @@ Hub-and-spoke works well up to ~10-15 spokes. Beyond that, consider:
 
 **Authors:** Sean Erikson (Cloud Nirvana), Lou 🔥 (AIOS Chief of Staff)
 **First Published:** April 2026
-**Last Updated:** April 3, 2026
+**Last Updated:** May 16, 2026
 **License:** CC BY 4.0

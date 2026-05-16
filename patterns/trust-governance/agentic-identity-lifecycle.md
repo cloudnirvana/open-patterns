@@ -160,6 +160,8 @@ Phases 1–3 are sequential onboarding. Phase 4 runs continuously with feedback 
 
 **Objective:** Agent operates in production, earns autonomy per capability through demonstrated reliability.
 
+> **Cadence integration (May 2026):** Phase 4 governance is now operationalized through the Cadence framework's Quarterdeck subsystem. The Quarterdeck provides: daily Plan of the Day task assignments, quantitative performance metrics (POD completion, on-time rate, escalation health, logging compliance), weekly leaderboards with competitive scoring, monthly ladder evaluations, and a structured self-improvement cycle. See: Ladder of Trust (Operational Measurement section), Plan of the Day, and Escalation Chain with SLA patterns.
+
 #### 4.1 Per-Capability Trust Matrix
 
 **Trust is granted per capability, not per agent.** An agent may be Mode 3 (autonomous) for reading CRM while staying Mode 1 (supervised) for sending external email.
