@@ -324,3 +324,113 @@ patterns:
       - "Enforces Memory Flush Discipline, Context Lifecycle Management, Hybrid Memory Retrieval"
       - "REM = Rapid Eye Movement sleep (memory consolidation in humans)"
     contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: agentic-identity-lifecycle
+    name: "Agentic Identity & Lifecycle"
+    intent: "Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, mandatory human ownership, and instant kill switch."
+    category: trust-governance
+    difficulty: advanced
+    path: "patterns/trust-governance/agentic-identity-lifecycle.md"
+    status: published
+    also_known_as:
+      - "Agent Identity Management"
+      - "AI Agent Governance"
+      - "Agent Provisioning & Retirement"
+    key_concepts:
+      - "5-phase lifecycle: Provision → Onboard → Operate → Escalate → Retire"
+      - "Per-capability trust progression (not agent-level)"
+      - "Mandatory human ownership (every agent has an accountable human)"
+      - "Continuous observability and instant kill switch"
+      - "Distinct from human IAM and service accounts"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: runbook-driven-agent-cadence
+    name: "Runbook-Driven Agent Cadence"
+    intent: "Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/runbook-driven-agent-cadence.md"
+    status: published
+    also_known_as:
+      - "Single-Cron Runbook"
+      - "Time-Aware Agent Execution"
+      - "Cadence-as-Configuration"
+    key_concepts:
+      - "Cron knows WHEN, runbook knows WHAT, task board knows WORK"
+      - "Editable behavior without infrastructure changes"
+      - "Scales from 1 to 11+ agents without cron explosion"
+      - "Runbook lives in Notion/database, not cron definition"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: plan-of-the-day
+    name: "Plan of the Day"
+    intent: "Synthesize multiple business event calendars, runbook playbooks, and in-flight work into a single daily executable plan with RACI ownership for every team member."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/plan-of-the-day.md"
+    status: published
+    also_known_as:
+      - "Daily Task Synthesis"
+      - "POD"
+      - "Daily Drumbeat"
+    key_concepts:
+      - "Morning generation from registries + runbooks"
+      - "RACI-based ownership assignment"
+      - "Deduplication against in-flight work"
+      - "Carryover tracking with aging policy"
+      - "The day ends when the plan is done"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: raci-scoped-notifications
+    name: "RACI-Scoped Notifications"
+    intent: "Control operational notification volume in multi-agent systems by routing messages based on each person's RACI role per task."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/raci-scoped-notifications.md"
+    status: published
+    also_known_as:
+      - "Role-Based Notification Routing"
+      - "RACI Notification Filter"
+    key_concepts:
+      - "RACI defined per task in runbooks"
+      - "Notification router reads RACI, delivers per config"
+      - "Loosely coupled from task engine"
+      - "Phased rollout (start narrow, expand)"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: escalation-chain-with-sla
+    name: "Escalation Chain with SLA"
+    intent: "Ensure AI agents surface blockers within a time-bound window instead of silently stalling, retrying, or hallucinating workarounds."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/escalation-chain-with-sla.md"
+    status: published
+    also_known_as:
+      - "Structured Agent Escalation"
+      - "Blocker SLA"
+      - "Silent Stall Prevention"
+    key_concepts:
+      - "Ordered escalation chain with SLA clock"
+      - "Unraised blockers are the worst failure mode"
+      - "Structured escalation data (blocker, attempted, recommendation)"
+      - "Metrics track both raised and unraised escalations"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: eod-reconciliation
+    name: "EOD Reconciliation"
+    intent: "Bridge the gap between work that happened and task status by cross-referencing open tasks against evidence sources at end of day."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/eod-reconciliation.md"
+    status: published
+    also_known_as:
+      - "Implicit Completion Detection"
+      - "Task-Evidence Reconciliation"
+      - "Daily Closeout Sweep"
+    key_concepts:
+      - "Evidence-based completion detection"
+      - "Multiple evidence sources per task type"
+      - "Attribution logging (what evidence, what source)"
+      - "Feeds carryover list for next day's planning"
+      - "Complementary to REM Cycle (task health vs system health)"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"

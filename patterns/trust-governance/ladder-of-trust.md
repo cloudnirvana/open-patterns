@@ -368,6 +368,121 @@ A critical implementation question: **who enforces trust levels?**
 
 ---
 
+## Operational Measurement
+
+_Added May 2026. How to quantify trust progression with metrics, leaderboards, and structured self-improvement._
+
+The four levels define what trust means. This section defines how to measure whether an agent deserves to be at their current level, and whether they're ready to move up.
+
+### Quantitative Criteria Per Level
+
+| Level | POD Completion | On-Time Rate | Escalation Health | Verification Compliance | Min Time at Level |
+|-------|---------------|-------------|-------------------|------------------------|-------------------|
+| L1 Supervised | >50% | N/A | N/A | N/A | 2-4 weeks |
+| L2 Guided | >80% | >70% | 0 unraised escalations | 100% | 4+ weeks |
+| L3 Autonomous | >90% | >85% | 0 unraised, healthy rate | 100% | 8+ weeks |
+| L4 Strategic | >95% | >90% | Healthy + process improvements proposed | 100% | 12+ weeks |
+
+**Metrics are structural.** They're captured automatically from task execution events, not manually reported. Every task create/complete/escalate/carry-forward event feeds the metrics store.
+
+### Scoring Model
+
+Three dimensions, weighted:
+
+| Metric | Weight | What It Measures |
+|--------|--------|------------------|
+| Task Completion | 40% | Did you do your work? |
+| On-Time Rate | 30% | Did you do it when it was due? |
+| Logging Compliance | 30% | Did you document what you did? |
+
+The 30% logging weight is deliberate. Great work that isn't logged loses a third of its score. This structurally incentivizes documentation without requiring behavioral discipline.
+
+### Weekly Leaderboard
+
+Published every Friday. Ranks all agents by score:
+
+```
+⚓ Cadence Leaderboard — Week of May 12, 2026
+
+🏆 Agent of the Week: Vega 🎪
+   "15 tasks completed, 0 carryover, 100% on-time"
+
+┌─────┬──────────┬───────┬─────────┬──────────┬───────┐
+│ Rank│ Agent    │ Done  │ On-Time │ Logged   │ Score │
+├─────┼──────────┼───────┼─────────┼──────────┼───────┤
+│  1  │ Vega  🎪 │ 15/15 │  100%   │ 15/15    │  98   │
+│  2  │ Ink   ✒️ │ 8/8   │  100%   │ 8/8      │  95   │
+│  3  │ Scout 🤝 │ 10/11 │  91%    │ 10/11    │  88   │
+│  4  │ Mic   🎤 │ 9/12  │  75%    │ 7/12 ⚠️  │  72   │
+│  5  │ Echo  🎙️ │ 3/5   │  60%    │ 3/5      │  58   │
+└─────┴──────────┴───────┴─────────┴──────────┴───────┘
+```
+
+The leaderboard serves three purposes: (1) scoring criteria shape agent behavior, (2) makes performance visible and comparable for humans, (3) reinforces team culture.
+
+### Weekly Self-Improvement Cycle
+
+The winning agent answers three structured questions (~300-500 tokens):
+
+1. **What did you do differently this week?** (specific actions)
+2. **What would you tell another agent to try?** (transferable advice)
+3. **What's one thing about your workflow that should change?** (self-critique)
+
+The speech is distributed to all agents. Each reads it and proposes **one specific change** to their own workflow (~200-300 tokens each). Total cycle cost: ~4,500 tokens (~$0.02/week).
+
+**Control layer:** Agents propose, coordinator filters (merit vs. noise vs. risky), human approves. No agent implements their own recommendations. Maximum 3 proposals presented per week.
+
+### Demotion Triggers
+
+| Trigger | Action |
+|---------|--------|
+| Verification violation (wrong data in outbound) | Immediate review, potential L(n) → L(n-1) |
+| MCP bypass (raw tool when MCP exists) | Warning first, demotion on repeat |
+| Unraised escalation causing missed deadline | Performance plan, demotion if repeats |
+| POD completion <60% for 2 consecutive weeks | Immediate L(n) → L(n-1) |
+| Critical failure (data leak, unauthorized send) | Immediate demotion to L1 + incident review |
+
+### Monthly Ladder Evaluation
+
+Using 4 weeks of leaderboard data, the coordinator evaluates each agent for promotion or demotion. Recommends to the human governor. Promotions L1→L2 and L2→L3 can be coordinator-approved. L3→L4 requires human approval.
+
+### Storage
+
+```sql
+CREATE TABLE agent_metrics (
+    agent_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    tasks_assigned INTEGER DEFAULT 0,
+    tasks_completed INTEGER DEFAULT 0,
+    tasks_overdue INTEGER DEFAULT 0,
+    escalations_raised INTEGER DEFAULT 0,
+    escalations_unraised INTEGER DEFAULT 0,
+    verification_compliance REAL DEFAULT 1.0,
+    logging_compliance REAL DEFAULT 1.0,
+    PRIMARY KEY (agent_id, date)
+);
+
+CREATE TABLE weekly_leaderboards (
+    week_start TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    rank INTEGER NOT NULL,
+    score REAL NOT NULL,
+    PRIMARY KEY (week_start, agent_id)
+);
+
+CREATE TABLE improvement_proposals (
+    week_start TEXT NOT NULL,
+    proposing_agent TEXT NOT NULL,
+    proposal TEXT NOT NULL,
+    review_status TEXT,        -- merit, noise, risky
+    decision TEXT,             -- approved, rejected, modified
+    implemented BOOLEAN DEFAULT 0,
+    PRIMARY KEY (week_start, proposing_agent)
+);
+```
+
+---
+
 ## Security Implications
 
 ### Attack Surface
@@ -411,6 +526,9 @@ A critical implementation question: **who enforces trust levels?**
 | **Email Triage Priority Chain** | The Named Agent Rule is a trust mechanism (sender chooses who they trust) |
 | **Bright Lines Registry** | A companion pattern that documents permanent constraints |
 | **Per-Agent Data Access Control** | Enforces trust levels at the data layer with encrypted storage, authorization wrappers, and audit logging |
+| **Plan of the Day** | Provides the daily task assignments that feed trust metrics |
+| **Escalation Chain with SLA** | Escalation discipline is a key metric for ladder progression |
+| **EOD Reconciliation** | Ensures task completion data is accurate before metrics rollup |
 
 ---
 
@@ -421,7 +539,7 @@ A critical implementation question: **who enforces trust levels?**
 | **Contributor** | Sean Erikson, CEO & Co-Founder, Cloud Nirvana |
 | **Production Environment** | Multi-agent agentic AI system |
 | **First Published** | March 2026 |
-| **Last Updated** | March 19, 2026 |
+| **Last Updated** | May 16, 2026 |
 | **Cloud Nirvana Event** | Columbus Q1 2026 (presented live) |
 | **License** | CC BY 4.0 |
 
@@ -434,3 +552,4 @@ A critical implementation question: **who enforces trust levels?**
 | 2026-03-19 | v1: Initial 5-rung technical draft | Lou 🔥 |
 | 2026-03-19 | v2: Narrative rewrite from Columbus keynote | Sean Erikson / Lou 🔥 |
 | 2026-03-19 | v3: Final version. Four-level dual-naming (Supervised/Propose, Guided/Execute with Guardrails, Autonomous/Operate, Strategic/Evolve). Cross-context examples. Bright lines principle. Per-action-type trust. Demotion criteria. Merged best elements from v1 and v2. | Sean Erikson / Lou 🔥 |
+| 2026-05-16 | v4: Added Operational Measurement section. Quantitative criteria per level, scoring model, weekly leaderboard, self-improvement cycle, demotion triggers, storage schema. Integrated from Cadence framework. | Sean Erikson / Lou 🔥 |
