@@ -23,10 +23,11 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (16 Published)
+## Patterns (20 Published)
 
 ### Trust & Governance
-- **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
+- **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level. *Includes operational measurement: quantitative metrics, weekly leaderboard, and self-improvement cycle.*
+- **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, and instant kill switch.
 
 ### Agentic Architecture
 - **[Hub-and-Spoke Orchestration](patterns/agentic-architecture/hub-and-spoke-orchestration.md)** — Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos.
@@ -35,12 +36,19 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[Hybrid Memory Retrieval](patterns/agentic-architecture/hybrid-memory-retrieval.md)** — Combine vector search, keyword search, and reranking to improve agent memory recall.
 - **[Context Lifecycle Management](patterns/agentic-architecture/context-lifecycle-management.md)** — Ensure persistent AI agents never lose critical context due to context window limits by implementing tiered memory, proactive checkpointing, and domain-aware compaction.
 
+### Operations & Orchestration
+- **[Runbook-Driven Agent Cadence](patterns/operations-orchestration/runbook-driven-agent-cadence.md)** — Separate the clock from the brain: one cron fires on schedule, one editable runbook defines what the agent does. *Includes structured YAML runbooks (v2) with variable resolution, RACI, dependencies, and outcome-level task design.*
+- **[Plan of the Day](patterns/operations-orchestration/plan-of-the-day.md)** — Synthesize multiple business event calendars, runbook playbooks, and in-flight work into a single daily executable plan with RACI ownership for every team member. *NEW*
+- **[RACI-Scoped Notifications](patterns/operations-orchestration/raci-scoped-notifications.md)** — Control operational notification volume in multi-agent systems by routing messages based on each person's RACI role per task. *NEW*
+- **[Escalation Chain with SLA](patterns/operations-orchestration/escalation-chain-with-sla.md)** — Ensure AI agents surface blockers within a time-bound window instead of silently stalling, retrying, or hallucinating workarounds. *NEW*
+- **[EOD Reconciliation](patterns/operations-orchestration/eod-reconciliation.md)** — Bridge the gap between work that happened and task status by cross-referencing open tasks against evidence sources at end of day. *NEW*
+
 ### RAG & Knowledge
 - **[Multi-Source Memory Architecture](patterns/rag-knowledge/multi-source-memory-architecture.md)** — Structure agent memory across multiple sources with different lifetimes, audiences, and update patterns so agents can find the right information without drowning in noise.
 
 ### Production Readiness
 - **[System Hygiene for Agentic Systems](patterns/production-readiness/system-hygiene-for-agentic-systems.md)** — Pre/post-upgrade procedures, regression testing, and health validation to prevent platform breakage.
-- **[Business Continuity & Disaster Recovery](patterns/production-readiness/business-continuity-disaster-recovery.md)** ⚠️ — Backup strategy, versioning, recovery scenarios, and RTO/RPO planning. **In progress, seeking practitioner input.**
+- **[Business Continuity & Disaster Recovery](patterns/production-readiness/business-continuity-disaster-recovery.md)** :warning: — Backup strategy, versioning, recovery scenarios, and RTO/RPO planning. **In progress, seeking practitioner input.**
 - **[Local-First Data Architecture](patterns/production-readiness/local-first-data-architecture.md)** — Sync external data sources to local storage so agents never block on network failures during live operations.
 - **[REM Cycle: Nightly Maintenance](patterns/production-readiness/rem-cycle-nightly-maintenance.md)** — Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle.
 
@@ -54,6 +62,13 @@ Each pattern has three layers. Read as deep as your role requires:
 ### Cost & Operations
 - **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene. Tested: $1,800/mo → $120/mo (93% reduction).
 - **[Local LLM as Classification Layer](patterns/cost-operations/local-llm-classification-layer.md)** — Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination.
+
+## Blueprints (2 Published)
+
+A pattern solves one problem. A **blueprint** shows how to build a whole capability by composing patterns together. You look at a blueprint and think "that's the thing I want to build."
+
+- **[Operational Cadence](blueprints/operational-cadence.md)** — Autonomous project management for hybrid human-AI teams. Composes: Runbook-Driven Agent Cadence, Plan of the Day, RACI-Scoped Notifications, Escalation Chain with SLA, EOD Reconciliation.
+- **[Strategic Program Management](blueprints/strategic-program-management.md)** — Scalable multi-agent program execution with built-in governance. Composes: Operational Cadence + Ladder of Trust + Per-Agent Data Access Control + Agentic Identity & Lifecycle + Hub-and-Spoke Orchestration.
 
 ## Get Started
 
@@ -99,7 +114,7 @@ People before platforms. Discipline over demos. Shared learning over self-promot
 
 ## Newsletter
 
-Weekly field notes from building the AIOS that powers Cloud Nirvana:  
+Weekly field notes from building the AIOS that powers Cloud Nirvana:
 **[cloudnirvana.substack.com](https://cloudnirvana.substack.com)**
 
 Written for one person. You can subscribe.
