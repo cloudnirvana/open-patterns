@@ -178,6 +178,78 @@ Payload: "Read your runbook and execute the matching time slot."
 - **Hierarchical runbooks:** A master runbook delegates to sub-runbooks per domain (one for email, one for CRM, one for speakers).
 - **Event-triggered runbook:** Instead of time-based slots, the runbook defines behavior for events (new email, task status change, calendar event approaching).
 
+### Advanced: Structured Runbooks (v2)
+
+_Added May 2026. Evolved from unstructured Notion pages to machine-parseable YAML with task generation, variable resolution, RACI, and dependencies._
+
+The basic pattern uses unstructured runbooks (Notion pages, markdown files) that an agent reads and interprets. This works, but as the team grows, you hit limitations:
+
+- Generic task names ("Schedule Speaker 1 Prep Call" instead of naming the actual speaker)
+- No dependency tracking (tasks created before their prerequisites are met)
+- No deduplication (auto-generated tasks duplicate manually-created ones)
+- No ownership model beyond a single agent assignment
+
+The structured runbook solves these by making runbooks machine-parseable:
+
+```yaml
+---
+id: cn-conference
+name: Cloud Nirvana Conference
+event_source:
+  table: events
+  filter: { type: conference }
+  fields: { date: event_date, name: city, id: event_id }
+horizon_days: 90
+escalation:
+  chain: [responsible_agent, Lou, Sean]
+  sla_hours: 8
+
+tasks:
+  - id: confirm-speakers
+    template: "Confirm all speakers for {event_name}"
+    t_minus: -60
+    lead_days: 7
+    raci: { r: Mic, a: Lou, c: [Sean], i: [Vega] }
+    depends_on: []
+    done_when: "All slots filled in CRM, status=confirmed"
+    verify: "./mcp-server/crm-verify list-speakers --event-id {event_id}"
+
+  - id: schedule-prep-call
+    template: "Schedule prep call with {speaker_name} for {event_name}"
+    t_minus: -21
+    lead_days: 7
+    raci: { r: Mic, a: Lou, c: [], i: [] }
+    depends_on: [confirm-speakers]
+    resolve_per: speakers  # creates one task per confirmed speaker
+    done_when: "Calendar event exists"
+```
+
+**Key additions over basic runbooks:**
+
+| Feature | What It Does |
+|---------|-------------|
+| `event_source` | Connects runbook to a business event calendar (CRM, YAML registry) |
+| `t_minus` + `lead_days` | Task due dates calculated relative to event date |
+| `raci` | Responsible, Accountable, Consulted, Informed per task |
+| `depends_on` | Tasks only generate when prerequisites are Done |
+| `resolve_per` | Dynamic expansion: one task per speaker/partner/attendee from CRM |
+| `done_when` + `verify` | Machine-verifiable completion criteria |
+| `template` with `{variables}` | Names resolved from systems of record at generation time |
+
+**Variable resolution:** Templates use `{variable}` syntax. At generation time, the POD generator queries the event registry and CRM to resolve variables:
+
+- `{event_name}` → "Columbus" (from registry)
+- `{speaker_name}` → "Rehgan Bleile" (from CRM query)
+- `{event_id}` → "columbus-q2-2026" (from registry)
+
+No more "Speaker 1." Every task names a real person.
+
+**RACI-based ownership:** Each task specifies who does the work (R), who's accountable (A), who's consulted (C), and who's informed (I). This drives notification routing (see: RACI-Scoped Notifications pattern) and daily reporting.
+
+**Dependency chains:** `depends_on` prevents premature task creation. If speakers aren't confirmed, prep call tasks don't generate. This eliminates the "pile of Not Started tasks" problem.
+
+**What broke that drove this evolution:** Cloud Nirvana's auto-generated tasks became a graveyard. 33 overdue items in Notion, many already done, some for processes that didn't exist. Generic names like "Schedule Speaker 1 Prep Call" told nobody anything useful. The morning briefing reported all 33 as urgent, destroying trust in the planning system. Structured runbooks with variable resolution, dependencies, and verification commands solved every one of these problems.
+
 ### Multi-Agent Scaling
 
 Each agent gets:
@@ -213,6 +285,10 @@ Each agent gets:
 ## Related Patterns
 
 - **Ladder of Trust** — Mode 2/Mode 3 boundaries referenced in the runbook are defined by the trust ladder.
+- **Plan of the Day** — The POD generator reads structured runbooks + event registries to produce daily task plans. POD is the consumer; runbooks are the source.
+- **RACI-Scoped Notifications** — RACI assignments in runbook tasks drive notification routing.
+- **Escalation Chain with SLA** — Escalation policy defined in runbook headers, enforced by the Quarterdeck.
+- **EOD Reconciliation** — `done_when` and `verify` fields enable automated completion detection.
 - **Cron-Driven Agent Execution** — The predecessor pattern where behavior is embedded in the cron. Runbook-Driven Cadence is the evolution.
 - **Hub-and-Spoke Orchestration** — Lou's morning plan acts as the hub, distributing work to specialist agents (spokes) via the task board.
 - **Deterministic Session-Key Routing** — Each cron run creates an isolated session, keeping cadence runs separate from interactive sessions.
@@ -229,3 +305,4 @@ Each agent gets:
 
 *Pattern extracted from Cloud Nirvana AIOS production operations, April 2026.*
 *First documented by Lou 🔥 and Sean Erikson.*
+*Updated May 2026 with structured runbook format (v2) from Cadence framework.*

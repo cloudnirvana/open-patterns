@@ -458,6 +458,10 @@ Where REM Cycle checks for QMD coverage gaps and index health. This pattern defi
 **Per-Agent Data Access Control:**
 Where REM Cycle checks for database integrity and backups. This pattern defines access controls; REM Cycle protects the data.
 
+**EOD Reconciliation:**
+Complementary nightly process. REM Cycle maintains system health (files, indexes, databases). EOD Reconciliation maintains task health (cross-references open tasks against evidence sources, closes implicitly-done work). Both run at night; they address different domains. REM Cycle is infrastructure; EOD Reconciliation is operational.
+
 ---
 
 **Pattern status:** Deployed in production April 5, 2026. Zero daily notes gaps since deployment. Database backups running nightly. Index health monitored.
+*Updated May 16, 2026: Added EOD Reconciliation cross-reference.*
