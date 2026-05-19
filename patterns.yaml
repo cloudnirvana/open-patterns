@@ -97,6 +97,24 @@ patterns:
       - "Layered enforcement: prompt → tool wrappers → sandbox → credentials"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: checkpoint-gated-autonomy
+    name: "Checkpoint-Gated Autonomy"
+    intent: "Decouple AI agent work from human approval using durable state, so agents don't need to stay alive while humans decide."
+    category: trust-governance
+    difficulty: intermediate
+    path: "patterns/trust-governance/checkpoint-gated-autonomy.md"
+    status: published
+    also_known_as:
+      - "Stateless Approval Gate"
+      - "Durable Human-in-the-Loop"
+      - "Async Checkpoint Approval"
+    key_concepts:
+      - "Agent produces artifact + checkpoint file, then session ends"
+      - "Human reviews on their own schedule, clicks Send or Edit"
+      - "Handler reads checkpoint, executes action, needs zero prior context"
+      - "No timeouts, no zombie sessions, no long-running waits"
+    contributor: "Sean Erikson, Cloud Nirvana"
+
   - id: hub-and-spoke-orchestration
     name: "Hub-and-Spoke Agent Orchestration"
     intent: "Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos."

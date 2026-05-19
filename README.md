@@ -23,10 +23,11 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (20 Published)
+## Patterns (22 Published, 1 In Progress)
 
 ### Trust & Governance
 - **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level. *Includes operational measurement: quantitative metrics, weekly leaderboard, and self-improvement cycle.*
+- **[Checkpoint-Gated Autonomy](patterns/trust-governance/checkpoint-gated-autonomy.md)** — Decouple AI agent work from human approval using durable state, so agents don't need to stay alive while humans decide.
 - **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, and instant kill switch.
 
 ### Agentic Architecture
