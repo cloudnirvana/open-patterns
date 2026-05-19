@@ -12,17 +12,18 @@ The Open Patterns Initiative is an open-source catalog of engineering patterns f
 
 ---
 
-## The 7 Pattern Categories
+## The 8 Pattern Categories
 
 | # | Category | What It Covers |
 |---|----------|---------------|
 | 1 | **Trust & Governance** | Permissions, approvals, human oversight, progressive autonomy |
 | 2 | **Agentic Architecture** | Agent coordination, orchestration, state management |
-| 3 | **RAG & Knowledge** | Retrieval, chunking, search, knowledge management |
-| 4 | **Production Readiness** | Failures, fallbacks, offline operation, deployment |
-| 5 | **Data Quality** | Identity resolution, dedup, enrichment, validation |
-| 6 | **Cost & Operations** | Token management, monitoring, scaling, scheduling |
-| 7 | **Security & Compliance** | Credentials, PII, trust boundaries, audit |
+| 3 | **Operations & Orchestration** | Operational rhythms, task generation, execution coordination |
+| 4 | **RAG & Knowledge** | Retrieval, chunking, search, knowledge management |
+| 5 | **Production Readiness** | Failures, fallbacks, offline operation, deployment |
+| 6 | **Data Quality** | Identity resolution, dedup, enrichment, validation |
+| 7 | **Cost & Operations** | Token management, monitoring, scaling, scheduling |
+| 8 | **Security & Compliance** | Credentials, PII, trust boundaries, audit |
 
 ---
 
@@ -46,7 +47,7 @@ Every pattern follows this structure. Copy it and fill it in.
 
 | Property | Value |
 |----------|-------|
-| **Category** | [from the 7 categories above] |
+| **Category** | [from the 8 categories above] |
 | **Difficulty** | [Foundational / Intermediate / Advanced] |
 | **Also Known As** | [Alternative names, if any] |
 
@@ -91,6 +92,12 @@ Do NOT use this pattern when:
 ## Security Implications
 ### Attack Surface
 - [How this pattern affects security]
+
+### Data Sensitivity
+- [What sensitive data does this pattern handle or expose?]
+
+### Failure Modes
+- [What happens if this pattern is compromised? What is the blast radius?]
 
 ### Mitigations
 - [Controls and defenses]
@@ -149,7 +156,7 @@ Read the Open Patterns catalog at github.com/cloudnirvana/open-patterns
 (specifically patterns.yaml and PATTERN-TEMPLATE.md).
 
 Then scan our codebase and identify implementations that match any of the
-9 pattern categories. For each pattern you find:
+8 pattern categories. For each pattern you find:
 
 1. Draft a pattern card following the template
 2. Include real code/config examples from our system
@@ -170,16 +177,15 @@ I'm going to describe my system's architecture. I want you to identify engineeri
 patterns that could be contributed to the Open Patterns Initiative
 (github.com/cloudnirvana/open-patterns).
 
-The catalog has 9 categories:
+The catalog has 8 categories:
 1. Trust & Governance (permissions, approvals, progressive autonomy)
 2. Agentic Architecture (agent coordination, orchestration, state)
-3. RAG & Knowledge (retrieval, chunking, search)
-4. Production Readiness (failures, fallbacks, deployment)
-5. Data Quality (identity resolution, dedup, enrichment)
-6. Organizational Readiness (team onboarding, governance)
-7. Integration (legacy systems, APIs)
-8. Cost & Operations (token management, monitoring, scaling)
-9. Security & Compliance (credentials, PII, trust boundaries)
+3. Operations & Orchestration (operational rhythms, task generation, execution coordination)
+4. RAG & Knowledge (retrieval, chunking, search)
+5. Production Readiness (failures, fallbacks, deployment)
+6. Data Quality (identity resolution, dedup, enrichment)
+7. Cost & Operations (token management, monitoring, scaling)
+8. Security & Compliance (credentials, PII, trust boundaries)
 
 Here's my system:
 [PASTE YOUR ARCHITECTURE DESCRIPTION, README, OR KEY CONFIG FILES HERE]
@@ -201,7 +207,7 @@ Then identify pattern gaps — categories where my system has no clear implement
 I built [DESCRIBE WHAT YOU BUILT IN 2-3 SENTENCES].
 
 Based on the Open Patterns Initiative categories (Trust & Governance, Agentic Architecture,
-RAG & Knowledge, Production Readiness, Data Quality, Organizational Readiness, Integration,
+Operations & Orchestration, RAG & Knowledge, Production Readiness, Data Quality,
 Cost & Operations, Security & Compliance):
 
 1. What patterns am I likely using, even if I haven't named them?
