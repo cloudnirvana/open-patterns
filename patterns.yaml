@@ -321,6 +321,26 @@ patterns:
       - "Weekly distillation workflow from daily logs to MEMORY.md"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: canonical-source-over-recall
+    name: "Canonical Source Over Recall"
+    intent: "Treat agent memory and vector retrieval as a map to the truth, never the truth itself, by keeping an authoritative source store that agents must read before acting on any reusable fact."
+    category: rag-knowledge
+    difficulty: intermediate
+    path: "patterns/rag-knowledge/canonical-source-over-recall.md"
+    status: published
+    also_known_as:
+      - "Source of Truth Over Recall"
+      - "Navigational Memory vs Authoritative Data"
+      - "Derived Index Pattern"
+      - "Read-Before-Act"
+    key_concepts:
+      - "Index is navigation (where the answer lives), canonical store is truth (what is true now)"
+      - "One-way derivation: canonical store to index, never the reverse"
+      - "Updates rewrite in place and mark prior versions status:superseded; queries filter status:current"
+      - "Read-before-act: retrieval surfaces a pointer, the agent reads the canonical source before acting"
+      - "Index is disposable and rebuildable; an outage degrades speed, not correctness"
+    contributor: "Brandon Smith, Beside Care (brandon.smith@besidecare.com)"
+
   - id: context-cost-control
     name: "Context Cost Control for Multi-Agent Systems"
     intent: "Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene."
