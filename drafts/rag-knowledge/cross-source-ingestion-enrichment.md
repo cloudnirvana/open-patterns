@@ -1,6 +1,6 @@
 # Cross-Source Ingestion Enrichment
 
-> **One-line intent:** Synthesize across heterogeneous source artifacts at ingestion time to produce rich, structured per-artifact metadata — so query recall is deep, response is fast, and privacy boundaries are structural rather than enforced by policy.
+> **One-line intent:** Synthesize across heterogeneous source artifacts at ingestion time to create typed links between ontology objects — so query recall is deep, response is fast, and privacy boundaries are structural rather than enforced by policy.
 
 **Status:** `draft`
 **Origin:** Reverb design session, May 30, 2026
@@ -12,17 +12,18 @@
 
 **The problem:** Knowledge systems built from a single source type (text only, slides only, transcripts only) miss the richer story that emerges when sources are read together. And if you defer synthesis to query time, every query pays the cost.
 
-**The insight:** Multiple source artifacts describing the same event — a presentation deck and its transcript, a video and its captions, a document and its meeting notes — can be synthesized once at ingestion time into structured per-artifact metadata that is faster to query, richer in context, and cleaner to govern than raw content alone.
+**The insight:** Multiple source artifacts describing the same event can be synthesized once at ingestion time. The synthesis doesn't produce metadata properties on documents — it creates **typed links between first-class objects in an ontology**. A Slide linked to a TranscriptSegment via `aligned_to` is a queryable relationship that exists once and is traversed for free at query time.
 
 **The key structure:**
 
 | Stage | What Happens | Cost |
 |-------|-------------|------|
-| Ingestion (once) | LLM synthesizes across sources, generates per-artifact metadata | Paid once per artifact |
-| Index build (once) | Embeddings built from enriched metadata, not raw content | Paid once per artifact |
-| Query time (every request) | Search pre-built index, return pre-computed metadata | Near-zero synthesis cost |
+| Ingestion (once) | Objects created: Slides, TranscriptSegments, Concepts | Paid once |
+| Enrichment (once) | LLM creates links: `aligned_to`, `illustrates`, `discusses` | Paid once per object |
+| Index build (once) | Embeddings built from enriched objects, not raw content | Paid once |
+| Query time (every request) | Traverse pre-built object graph, return public objects | Near-zero synthesis cost |
 
-**What broke when we got this wrong:** We designed Reverb's slide layer assuming speaker notes would carry the alignment signal. Then the question came: "What do we do with slides that have no notes?" The answer — leave them less discoverable than slides with notes — creates inconsistent retrieval quality across the corpus. The enrichment pass solves this by normalizing all artifacts to the same metadata quality floor, regardless of how much raw annotation they arrived with.
+**What broke when we got this wrong:** First design used a flat `index.json` per slide deck — one file per deck containing slide metadata as JSON array elements. Cross-deck queries ("all slides about context management from any speaker") required iterating every file. That's a file cabinet, not a knowledge system. Modeling slides as first-class objects with typed links makes the same query a single graph traversal.
 
 ---
 
@@ -32,7 +33,7 @@
 |----------|-------|
 | **Category** | RAG & Knowledge |
 | **Difficulty** | Intermediate |
-| **Also Known As** | Ingestion-Time Synthesis, Pre-Enriched Artifact Index, Cross-Modal Alignment |
+| **Also Known As** | Ingestion-Time Synthesis, Ontological Enrichment at Ingestion, Cross-Modal Link Creation |
 
 ---
 
@@ -46,9 +47,11 @@ The naive approach — semantic search on transcript text, semantic search on sl
 
 The deeper problem: if you defer this synthesis to query time, every single query pays LLM latency and cost to figure out which slide matches which transcript segment. At scale, this is untenable. And it's unnecessary — the relationship between a slide and its corresponding transcript segment doesn't change. It's a fact about the corpus, not the query.
 
-The right answer: do the synthesis work once, at ingestion, and bake the results into the artifact index. When a query arrives, the alignment is already there. Return it immediately.
+The right answer: do the synthesis work once, at ingestion, and create the relationship as a typed link in the object graph. When a query arrives, traverse the link. No synthesis, no iteration, no per-query LLM calls.
 
-Cloud Nirvana hit this directly while designing Reverb's slide layer (May 30, 2026). The question "what do we do with slides that have no notes?" forced the decision: accept inconsistent metadata quality across the corpus, or build an enrichment pass that normalizes quality for every artifact regardless of source completeness.
+Cloud Nirvana hit two design failures building Reverb (May 30, 2026):
+1. "What do we do with slides that have no notes?" — the enrichment pass solves this by normalizing quality regardless of source completeness.
+2. "How do we query across all decks at once?" — the flat `index.json` approach couldn't. Modeling Slides as ontology objects with links can.
 
 ---
 
@@ -57,9 +60,9 @@ Cloud Nirvana hit this directly while designing Reverb's slide layer (May 30, 20
 Use this pattern when:
 - You have multiple source artifacts describing the same event or topic (slides + transcript, video + captions, document + notes)
 - Source artifacts vary in annotation completeness (some have rich metadata, others have none)
-- You need consistent retrieval quality across all artifacts regardless of source quality
+- You need cross-entity queries that span multiple artifacts or source types
 - Query latency matters — synthesis cost must not be paid per query
-- Privacy separation is required between internal-use content (speaker notes, raw alignment data) and public-facing content
+- Privacy separation is required between internal-use content and public-facing content
 
 Do NOT use this pattern when:
 - Your source artifacts are uniform in type and quality (enrichment adds no normalization value)
@@ -73,20 +76,23 @@ Do NOT use this pattern when:
 
 ```mermaid
 graph TD
-    A1[Slide Deck<br/>PPTX] --> B[Enrichment Pass<br/>LLM synthesis]
+    A1[Slide Deck<br/>PPTX] --> B[Ingestion]
     A2[Transcript<br/>timestamped text] --> B
-    A3[Speaker Notes<br/>if available] --> B
-    B --> C[Per-Artifact Index<br/>index.json]
-    C --> D[Public Layer<br/>title, summary, key concepts, image path]
-    C --> E[Private Layer<br/>notes, transcript segment, alignment signal]
-    D --> F[Public Embeddings<br/>query matching]
-    E --> G[Internal Embeddings<br/>richer alignment, never returned raw]
-    F --> H[Query API]
-    G --> H
-    H --> I[Response<br/>answer + slide image + public metadata]
+    B --> C1[Slide Objects]
+    B --> C2[TranscriptSegment Objects]
+    C1 --> D[Enrichment Pass<br/>LLM synthesis]
+    C2 --> D
+    D --> E1[aligned_to links<br/>Slide → TranscriptSegment]
+    D --> E2[illustrates links<br/>Slide → Concept]
+    D --> E3[discusses links<br/>Segment → Concept]
+    E1 --> F[Object Graph<br/>SQLite + LanceDB]
+    E2 --> F
+    E3 --> F
+    F --> G[Query API<br/>graph traversal]
+    G --> H[Response<br/>answer + slide image + public objects]
 ```
 
-*The enrichment pass synthesizes across all available sources once at ingestion. The resulting index carries both a public layer (safe to return to any user) and a private layer (used internally for retrieval quality, never exposed). Query time touches only pre-computed artifacts.*
+*Ingestion creates objects. The enrichment pass creates links. The object graph answers queries by traversal — no per-query LLM synthesis.*
 
 ---
 
@@ -95,84 +101,86 @@ graph TD
 | Participant | Role | Example |
 |------------|------|---------|
 | Source Artifacts | Raw inputs from different modalities | PPTX deck, timestamped transcript, speaker notes |
-| Enrichment Engine | LLM pass that synthesizes across sources, runs once at ingestion | Claude synthesizing slide content + transcript segment into structured metadata |
-| Enriched Index | Per-artifact JSON with public/private separation | `index.json` in `reverb/slides/{speaker}-{event}/` |
-| Privacy Boundary | Structural separation in the data schema — not a runtime policy | `public` and `private` keys in each artifact record; query layer returns `public` only |
-| Rendered Artifacts | Pre-generated display-ready versions of source content | Slide PNGs at `frames/slide_007.png` |
-| Query Layer | Searches enriched embeddings at query time; assembles and returns only public metadata + rendered artifacts | Reverb MCP query endpoint |
+| Ingestion Pipeline | Creates first-class objects from raw sources | Slide objects (one per slide), TranscriptSegment objects (~500 token chunks) |
+| Enrichment Engine | LLM pass that synthesizes across objects, creates typed links | Claude aligning Slides to TranscriptSegments, extracting Concepts |
+| Object Graph | Ontology storage — objects + typed link tables | SQLite for objects/links; LanceDB for embeddings keyed by object_id |
+| Privacy Boundary | Structural split in object schema — public object vs. private companion object | `Slide` (public) + `SlidePrivate` (internal only, same ID, never returned by API) |
+| Rendered Assets | Pre-generated display-ready versions | Slide PNGs named by slide_id, stored in flat directory |
+| Query Layer | Traverses object graph; returns only public objects + assets | Reverb MCP query endpoint |
 
 ---
 
 ## How It Works
 
-1. **Ingest source artifacts.** The ingestion script receives all available sources for an event: the slide deck, the transcript, any existing speaker notes.
+1. **Ingest source artifacts.** Extract Slide objects from the deck (title, body text per slide; render PNG). Chunk the transcript into TranscriptSegment objects (~500 tokens, preserving timestamps where available). Store speaker notes in `SlidePrivate` companion objects — same ID as their Slide, never returned via API.
 
-2. **Extract per-slide raw content.** For a slide deck: extract title, body text, and notes (if present) per slide using `python-pptx`. Render each slide as a PNG using LibreOffice headless.
+2. **Pre-filter for enrichment.** For each Slide, use cheap semantic search to identify the top-N TranscriptSegments most likely to align. This bounds LLM input size without sacrificing recall.
 
-3. **Chunk the transcript.** Split the transcript into time-bounded segments. For conference talks, natural pause points and topic transitions work well.
-
-4. **Run the enrichment pass.** For each slide, send to the LLM:
+3. **Run the enrichment pass.** For each Slide, send to the LLM:
    - Slide title + body text
-   - Existing speaker notes (if any)
-   - The full transcript (or the top-N most semantically similar transcript chunks as a pre-filter)
+   - Speaker notes (if any) — used as alignment signal, not exposed
+   - Top-N candidate TranscriptSegments
 
-   The LLM returns structured metadata:
-   - `summary`: What the speaker communicated on this slide, in their voice
-   - `key_concepts`: Extractable topic tags for retrieval
-   - `transcript_segment`: The timestamp range and text of the transcript most aligned with this slide
-   - `speaker_voice`: Characterization of rhetorical intent (first-person lesson, framework introduction, case study, etc.)
+   The LLM returns:
+   - Which TranscriptSegment(s) to link via `aligned_to`
+   - Which Concepts to link via `illustrates`
+   - Enrichment summary (stored in `SlidePrivate`)
 
-5. **Build the enriched index.** Write `index.json` with one record per slide. Each record carries:
-   - `public`: title, body text, summary, key concepts, image path — safe to return to any user
-   - `private`: original notes, transcript segment, alignment signal — internal use only
+4. **Create the links.** Write link records to the database:
+   - `slide_segment_links` (aligned_to)
+   - `slide_concept_links` (illustrates)
+   - `segment_concept_links` (discusses)
 
-6. **Generate embeddings.** Two embedding vectors per slide:
-   - `public_embedding`: from public fields only
-   - `internal_embedding`: from public fields + private fields (richer, better alignment)
+   These are database rows, not JSON properties. They are queryable directly.
 
-   Store in the vector index. Query matching uses `internal_embedding` for recall; responses return `public` fields only.
+5. **Generate embeddings.** Two vectors per Slide and TranscriptSegment:
+   - `public_embedding`: from public fields only (title, body, text)
+   - `internal_embedding`: from public fields + SlidePrivate content (notes, summary, linked concept names)
 
-7. **At query time:** Search the vector index → retrieve matching slide records → assemble response with answer + slide image(s) + public metadata. No synthesis happens at query time.
+   Store in LanceDB keyed by object_id. Query matching uses `internal_embedding`; responses return public object fields only.
+
+6. **At query time:** Vector search on `internal_embedding` → retrieve matching objects → traverse `aligned_to` links to get paired Slides/Segments → traverse `illustrates`/`discusses` to get related Concepts → assemble response with answer + slide image(s) + public object data. No LLM calls at query time.
 
 ### Implementation Example
 
 ```python
-# ingestion script pseudocode
-def enrich_slide(slide_num, slide_content, transcript_chunks, llm):
+# enrichment pass pseudocode — creates links, not metadata
+def enrich_slide(slide: Slide, candidate_segments: list[TranscriptSegment], llm, db):
     prompt = f"""
-    You are enriching a conference slide for a knowledge index.
+    Slide {slide.slide_num}: {slide.title}
+    Body: {slide.body_text}
+    Notes: {slide.private.notes_original or 'none'}
     
-    Slide {slide_num}:
-    Title: {slide_content['title']}
-    Body: {slide_content['body']}
-    Speaker notes: {slide_content['notes'] or 'none'}
+    Candidate transcript segments:
+    {format_segments(candidate_segments)}
     
-    Most relevant transcript segments:
-    {format_chunks(transcript_chunks)}
-    
-    Return JSON with:
-    - summary: what the speaker communicated on this slide (2-3 sentences, in speaker's voice)
-    - key_concepts: list of 3-6 topic tags
-    - transcript_segment: {{start, end, text}} of the best-matching transcript passage
-    - speaker_voice: one of [lesson, framework, case_study, data_point, call_to_action, transition]
+    Return JSON:
+    - aligned_segment_ids: list of segment IDs this slide aligns to
+    - concept_names: list of 3-6 concept names this slide illustrates
+    - summary: what the speaker communicated on this slide (2-3 sentences)
+    - speaker_voice: lesson | framework | case_study | data_point | call_to_action | transition
     """
-    enrichment = llm.complete(prompt, response_format="json")
+    result = llm.complete(prompt, response_format="json")
     
-    return {
-        "slide_num": slide_num,
-        "public": {
-            "title": slide_content['title'],
-            "body": slide_content['body'],
-            "summary": enrichment['summary'],
-            "key_concepts": enrichment['key_concepts'],
-            "speaker_voice": enrichment['speaker_voice'],
-            "image_path": f"frames/slide_{slide_num:03d}.png"
-        },
-        "private": {
-            "notes_original": slide_content['notes'],
-            "transcript_segment": enrichment['transcript_segment'],
-        }
-    }
+    # Create links — database rows, not JSON properties
+    for seg_id in result['aligned_segment_ids']:
+        db.execute(
+            "INSERT INTO slide_segment_links (slide_id, segment_id, link_type) VALUES (?, ?, 'aligned_to')",
+            (slide.id, seg_id)
+        )
+    
+    for concept_name in result['concept_names']:
+        concept = db.get_or_create_concept(concept_name)
+        db.execute(
+            "INSERT INTO slide_concept_links (slide_id, concept_id, link_type) VALUES (?, ?, 'illustrates')",
+            (slide.id, concept.id)
+        )
+    
+    # Store enrichment summary in private companion object — never returned by API
+    db.execute(
+        "UPDATE slide_private SET enrichment_summary = ?, speaker_voice = ?, enriched_at = ? WHERE slide_id = ?",
+        (result['summary'], result['speaker_voice'], now(), slide.id)
+    )
 ```
 
 ---
@@ -180,56 +188,57 @@ def enrich_slide(slide_num, slide_content, transcript_chunks, llm):
 ## Consequences
 
 ### Benefits
-- **Consistent retrieval quality regardless of source completeness.** Slides with no notes get the same metadata depth as slides with detailed notes. The enrichment pass normalizes the floor.
-- **Query time is fast.** All LLM synthesis happens once at ingestion. Per-query cost is embedding lookup only.
-- **Privacy is structural.** The public/private split is in the data schema. The query layer can't accidentally leak private content because it only reads the `public` key. Policy enforcement at the schema level is orders of magnitude more reliable than runtime filtering.
-- **Richer embeddings without exposing source material.** Internal embeddings are built from private content (notes, raw transcript alignment) and therefore match queries more accurately — but the content that generated them is never returned.
-- **Alignment as a byproduct.** Transcript-to-slide alignment — which would have been "Flavor 2" (harder, requires timestamp data) — falls out naturally from the enrichment pass. You get it for free.
+- **Cross-entity queries work natively.** "All slides about context management from any speaker" is a single join on `slide_concept_links` where `concept_id = X`. No file iteration.
+- **Consistent retrieval quality regardless of source completeness.** Slides with no speaker notes get the same link depth as slides with detailed notes. The enrichment pass normalizes the floor.
+- **Query time is fast.** All LLM synthesis happens once at ingestion. Per-query cost is graph traversal only.
+- **Privacy is structural.** The `Slide` / `SlidePrivate` object split means the API cannot accidentally return private content — it only has access to the public object schema. Policy at the schema level is orders of magnitude more reliable than runtime filtering.
+- **Transcript-to-slide alignment as a byproduct.** Precise alignment falls out of the enrichment pass without requiring timestamp data from video recording.
 
 ### Liabilities
-- **Ingestion latency increases.** LLM enrichment per artifact adds time. For a 40-slide deck this is seconds to minutes — acceptable for a batch pipeline, not for real-time.
-- **Enrichment quality depends on LLM quality.** Bad transcript segmentation or a weak LLM prompt produces bad metadata. The index is only as good as the enrichment pass.
-- **Re-enrichment on prompt changes.** If you improve the enrichment prompt significantly, you may want to re-run it on existing artifacts. Build your ingestion script to support idempotent re-runs.
+- **Ingestion latency increases.** LLM enrichment per object adds time. Acceptable for batch pipelines; not for real-time.
+- **Enrichment quality depends on LLM quality.** Bad prompts or poor transcript chunking produce weak links. The object graph is only as good as the enrichment pass.
+- **Re-enrichment on prompt changes.** Improving the enrichment prompt may warrant re-running it on existing objects. Build for idempotent re-runs — same object IDs, links deleted and recreated.
 
 ### What Broke in Practice
-- **The notes assumption.** First design assumed speaker notes would carry the primary alignment signal. When the question "what about slides with no notes?" surfaced, the architecture would have produced an inconsistent corpus. Explicit enrichment pass was the fix, not a workaround.
-- **Single-source embeddings miss cross-modal meaning.** Early instinct was to embed slide text directly and embed transcript chunks directly, then match at query time. This fails because "token budget" in a slide bullet and "I learned the hard way that you need to be very explicit about how many tokens you allow in the context window" in spoken transcript describe the same thing but share almost no vocabulary. Enrichment-generated summaries bridge the modality gap at ingestion.
+- **The flat file assumption.** First design used `index.json` per deck — structured metadata as JSON array elements. Works for a single deck. Falls apart for cross-deck queries. The ontology object model was the fix, not a workaround.
+- **Single-source embeddings miss cross-modal meaning.** Embedding slide text and transcript text separately then matching at query time fails because "token budget" (slide) and "I learned the hard way that you need to be explicit about how many tokens..." (transcript) share almost no vocabulary. Enrichment-generated summaries bridge the modality gap before embeddings are built.
+- **Notes as the only alignment signal.** Early design assumed speaker notes would carry alignment. Slides without notes would be systematically under-linked. The enrichment pass removes this dependency entirely.
 
 ---
 
 ## Implementation Notes
 
 ### Variations
-- **Document + meeting notes:** Same pattern applies when ingesting documents (design docs, RFCs) alongside meeting transcripts that discussed them. Enrich each document section with relevant meeting discussion.
-- **Video + slides:** If recordings are available, slide timestamps from screen capture can seed the enrichment pass with precise alignment before the LLM refines it.
-- **Podcast episodes:** Enrich transcript chunks with structured metadata (topic, guest voice characterization, rhetorical type) even when the only source is the transcript itself. The LLM still improves retrieval quality over raw text.
-- **Tiered enrichment:** Run a fast, cheap enrichment pass first (topic tags only). Run a full enrichment pass later for high-value artifacts. The index supports both.
+- **Document + meeting notes:** Same pattern. Enrich document sections with `discussed_in` links to MeetingSegments from meetings that referenced the document.
+- **Podcast episodes:** Transcript only, no slides. Still worth enriching — TranscriptSegment `discusses` Concept links enable cross-episode concept queries without slides.
+- **Video + slides:** If screen recordings are available, slide timestamps can seed the enrichment pass with high-confidence alignment before LLM refinement.
 
 ### Common Pitfalls
-- **Enriching without chunking first.** Sending a 60-minute transcript to the LLM for a single slide alignment is expensive and produces worse results than sending the top 5 pre-filtered chunks. Pre-filter with cheap semantic search before the enrichment LLM call.
-- **Mutating source files.** Don't write enrichment back into the original PPTX or transcript. Source files are the ground truth; the index is derived. Keep them separate.
-- **Single embedding for both use cases.** Build two embeddings per artifact: one from public fields only (for public-facing search), one from all fields (for internal alignment quality). Using one vector for both leaks private content into public retrieval or degrades alignment quality.
+- **Enriching without pre-filtering.** Sending a 60-minute transcript to the LLM for each slide is expensive and produces worse results than the top-5 pre-filtered candidates. Always pre-filter with cheap semantic search first.
+- **Mutating source files.** Source PPTX and transcript files are ground truth. Never write enrichment back into them. The object graph is derived; source files are canonical.
+- **One embedding for both use cases.** Build two embeddings per object: public-only (for community-facing search) and internal (for alignment quality). Using one vector for both leaks private content into public retrieval or degrades recall.
+- **Flat file storage for objects.** This is the index.json anti-pattern. Objects belong in a database with proper link tables — not JSON files on disk.
 
 ---
 
 ## Security Implications
 
 ### Attack Surface
-- The enrichment index contains two tiers of data at different sensitivity levels. Any path that returns raw index records rather than the `public` layer only is a data leak.
+- The object graph contains two tiers of objects at different sensitivity levels (`Slide` and `SlidePrivate`). Any query path that returns `SlidePrivate` records is a data leak.
 - The rendering pipeline (LibreOffice headless, image storage) adds a file-system attack surface if not sandboxed.
 
 ### Data Sensitivity
-- **Private layer:** Speaker notes, raw transcript segments with speaker attribution, alignment confidence scores. Not for community consumption.
-- **Public layer:** Summaries and key concepts generated from private content — check that LLM summarization doesn't inadvertently reproduce private phrasing verbatim.
-- **Rendered images:** Slides may contain content the speaker considers proprietary. Establish speaker consent as a prerequisite for ingestion.
+- **SlidePrivate:** Speaker notes, raw enrichment summaries. Not for community consumption.
+- **Public Slide objects:** Summaries generated from private content — verify LLM summarization doesn't inadvertently reproduce private phrasing verbatim.
+- **Rendered images:** Slides may contain content the speaker considers proprietary. Speaker consent is a prerequisite for ingestion.
 
 ### Failure Modes
-- Query layer bug returns `private` key alongside `public`. Mitigation: query layer explicitly selects only `public` fields by schema; never returns the full record.
-- Enrichment LLM prompt injection via malicious slide content. Mitigation: treat slide content as untrusted input; sanitize before passing to LLM.
+- Query layer bug returns `SlidePrivate` objects alongside `Slide` objects. Mitigation: query layer operates on a view or serializer that explicitly projects only public object schemas. `SlidePrivate` is not reachable from the API surface.
+- Prompt injection via malicious slide content. Mitigation: treat all slide content as untrusted input; sanitize before passing to enrichment LLM.
 
 ### Mitigations
-- Schema-level privacy: query API is built against a view or serializer that only projects `public` fields. Private fields are not reachable from the API surface regardless of query construction.
-- Speaker consent flag in the index. Artifacts without consent flag `ingested: false` and are excluded from all query results until consent is confirmed.
+- Schema-level privacy: community API is built against a view that only includes `Slide`, `TranscriptSegment`, `Concept`, and their public link types. `SlidePrivate` is physically inaccessible from the API layer.
+- Speaker consent flag on `Talk` object. Talks without confirmed consent are excluded from all community-tier query results.
 
 ---
 
@@ -237,7 +246,7 @@ def enrich_slide(slide_num, slide_content, transcript_chunks, llm):
 
 | Organization | Context | Scale |
 |-------------|---------|-------|
-| Cloud Nirvana | Reverb knowledge intelligence platform — enriching conference talk slide decks against speaker transcripts for community-facing retrieval | ~40 talks, 4 years of CN events |
+| Cloud Nirvana | Reverb knowledge intelligence platform — enriching conference talk slide decks against speaker transcripts for community-facing retrieval | ~120 decks, ~40 talks, 4 years of CN events |
 
 ---
 
@@ -245,8 +254,8 @@ def enrich_slide(slide_num, slide_content, transcript_chunks, llm):
 
 | Pattern | Relationship |
 |---------|-------------|
-| Metadata-Separated RAG Architecture | Complementary — this pattern defines what enriched metadata looks like; that pattern defines where it lives (vector store vs. relational store) |
-| Checkpoint-Gated Autonomy | Structural parallel — both patterns do expensive, stateful work once and preserve the result; this pattern does it at ingestion, Checkpoint-Gated does it at agent decision time |
+| Metadata-Separated RAG Architecture | Complementary — this pattern defines what enriched objects and links look like; that pattern defines the storage split (vector store vs. relational store) |
+| Checkpoint-Gated Autonomy | Structural parallel — both do expensive stateful work once and preserve the result as a first-class artifact; this pattern at ingestion time, Checkpoint-Gated at agent decision time |
 
 ---
 
@@ -268,3 +277,4 @@ def enrich_slide(slide_num, slide_content, transcript_chunks, llm):
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-05-30 | Initial draft | Lou (AIOS) |
+| 2026-05-30 | Revised: enrichment creates ontology links, not metadata properties; index.json anti-pattern documented; ontological framing throughout | Lou (AIOS) |
