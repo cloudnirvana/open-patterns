@@ -486,3 +486,98 @@ patterns:
       - "Feeds carryover list for next day's planning"
       - "Complementary to REM Cycle (task health vs system health)"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: builder-reviewer-sub-agent-loop
+    name: "Builder/Reviewer Sub-Agent Loop"
+    intent: "Close the spec→build→review loop with dedicated sub-agents so that reviewer authority is limited to the spec and quality gates are structurally enforced, not opinion-driven."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/builder-reviewer-sub-agent-loop.md"
+    status: published
+    also_known_as:
+      - "Spec-Gated Build Loop"
+      - "Dual Sub-Agent Review"
+      - "Reviewer Authority Constraint"
+    key_concepts:
+      - "Builder sub-agent: implements against the spec, does not interpret requirements"
+      - "Reviewer sub-agent: enforces acceptance criteria from the story file, not from the orchestrator's context"
+      - "Reviewer authority is limited to the spec — no taste-based or scope-expanding feedback"
+      - "PASS/FAIL verdict gates story progression; FAIL triggers a re-spec, not a re-prompt"
+      - "Orchestrator reads story status from the file at each loop iteration (canonical source discipline)"
+    contributor: "David Hague, flex project"
+
+  - id: phase-spec-pause-resume
+    name: "Phase Spec with Formal Pause/Resume"
+    intent: "Preserve agentic initiative continuity across context clears, forks, and pauses using a story state machine and explicit deferred-story accounting."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/phase-spec-pause-resume.md"
+    status: published
+    also_known_as:
+      - "Story State Machine"
+      - "Agentic Phase Continuity"
+      - "Phase Fork Protocol"
+    key_concepts:
+      - "Four story states: planned / in_progress / complete / deferred"
+      - "Phase fork: originating phase records deferred stories with reason and destination phase"
+      - "Phase resume: resuming phase references originating phase; stories get new IDs"
+      - "Checkpoint gate: no phase can be completed with silently abandoned planned stories"
+      - "Context compaction safety: state lives in the spec file, not the context window"
+    contributor: "David Hague, flex project"
+
+  - id: cer-backlog-living-phases
+    name: "CER Backlog + Living Backlog Phases"
+    intent: "Eliminate quarterly re-discovery of known issues with a quadrant triage log (Do Now / Do Later / Do Much Later / Do Never) where findings are never deleted, only resolved."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/cer-backlog-living-phases.md"
+    status: published
+    also_known_as:
+      - "Cold-Eyes Review Backlog"
+      - "Living Backlog Phases"
+      - "Quadrant Finding Log"
+    key_concepts:
+      - "CER (Cold-Eyes Review): structured external review generating a triage list, not a report"
+      - "Four quadrants: Do Now (blocks shipping), Do Later (debt), Do Much Later (future), Do Never (acknowledged non-issues)"
+      - "Findings are never deleted — resolved entries get disposition and date, not removal"
+      - "Backlog grooming on every CER: pull-forward candidates from Do Later when their forcing function arrives"
+      - "Living phases: phase docs for each quadrant are open files, not frozen artifacts"
+    contributor: "David Hague, flex project"
+
+  - id: per-phase-effort-seeded-prior
+    name: "Per-Phase Effort.db with Seeded Prior"
+    intent: "Bootstrap per-phase token-cost estimation from a cross-project baseline so new projects inherit a calibrated prior instead of starting blind."
+    category: cost-operations
+    difficulty: intermediate
+    path: "patterns/cost-operations/per-phase-effort-seeded-prior.md"
+    status: published
+    also_known_as:
+      - "Effort Prior Seeding"
+      - "Cross-Project Cost Baseline"
+      - "Token Cost Prior"
+    key_concepts:
+      - "effort.db: per-phase SQLite database recording token counts per story and attempt"
+      - "Seeded prior: a cross-project baseline (effort_seed.json) provides default distributions before phase data accumulates"
+      - "Per-phase isolation: each phase gets its own database; the seed prevents cold-start underestimation"
+      - "Extends context-cost-control with a learned prior — moves from reactive monitoring to predictive budgeting"
+      - "New-project cold start: without a seed, the first phase has no prior; seeding solves this with borrowed data"
+    contributor: "David Hague, flex project"
+
+  - id: conceptual-rebuild-completeness
+    name: "Conceptual Rebuild Completeness"
+    intent: "Require every new database table to have an operator management surface before phase checkpoint — ensuring new systems are observable without a database console."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/conceptual-rebuild-completeness.md"
+    status: published
+    also_known_as:
+      - "Schema-to-UI Parity Gate"
+      - "Table Management Gate"
+      - "Operator Surface Requirement"
+    key_concepts:
+      - "Gate: every new database table must answer 'where does a human manage this?' before phase checkpoint"
+      - "Exceptions (must be explicitly documented): append-only audit logs, pure junction tables, cron-output cache tables"
+      - "Scope interpretation: 'build X with full CRUD, evolve later' means build the CRUD now"
+      - "Enforcement: management UI story must be in the same phase spec as the table — not the backlog"
+      - "Discovered after phases shipped new data models with no operator surface and required emergency UI stories"
+    contributor: "David Hague, flex project"
