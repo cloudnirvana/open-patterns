@@ -106,11 +106,11 @@ Phases 1–3 are sequential onboarding. Phase 4 runs continuously with feedback 
 
 1. **Human Liaison submits request** with business need, capability manifest (specific tools/APIs required), and resource estimate
 2. **Agent Registry (AR) validates** — no duplicates, sponsor has authority, security review for sensitive data
-3. **AR issues System Name** — Format: `<LOB>-<DOMAIN>-<ID>-<ENV>` (e.g., `EVENTS-SPEAKER-001-PROD`)
+3. **AR issues System Name** — Format: `{ORG}-{DOMAIN}-{SEQ}` where `ORG` is a short organization code (e.g., `CN` for Cloud Nirvana, `GV` for Good Vibes Winery), `DOMAIN` reflects the agent's area of responsibility, and `SEQ` is a zero-padded sequence number. Example: `CN-PARTNERSHIP-001`, `GV-HOSPITALITY-001`. The system name lives in the Agent Registry only — it does not need to propagate to the underlying platform runtime identifier. No environment suffix is needed for single-environment deployments; extend the format when multiple environments are required.
 4. **Identity provisioned** — Agent registered in IAM as distinct from service accounts; credentials short-lived, scoped to capability manifest, tied to Human Liaison
 5. **Kill switch wired** — AR exposes single endpoint to suspend agent organization-wide
 
-**Gate:** Department approval + IAM identity + kill switch verified
+**Gate:** Human Liaison approval + IAM identity + kill switch verified
 
 **Why this matters:** Every agent has one accountable human. No orphans, no standing privileged access, no guessing who to call when it breaks.
 
@@ -272,9 +272,13 @@ When agents orchestrate other agents:
 
 **Required fields per agent:**
 
-- System Name, Display Name, Agent Class (Copilot/Workflow/Ambient)
+- System Name, Display Name
 - Human Liaison (mandatory), Backup Liaison
-- Department, Domain, Onboarding Date, Status
+- Domain of Responsibility, Onboarding Date, Status
+
+> **Note on Agent Class (Copilot/Workflow/Ambient):** This classification is useful at enterprise scale when different policy frameworks apply by class. For small teams (under ~20 agents) where every agent is known personally, agent class adds governance overhead without driving meaningful decisions. Omit it at small scale; introduce it when you need class-level policy rules.
+
+> **Note on Department:** Replace with **Domain of Responsibility** -- the specific function the agent owns. "Department" implies org chart structure which is rarely how agent teams are organized. One agent, one domain. The domain IS the organizing principle.
 - **Trust Matrix** (per-capability modes)
 - Platform, Workspace Path, **Capability Manifest**
 - Compliance Scope, Last Review, Performance Notes, Incidents, Cost
@@ -311,14 +315,14 @@ Agents aren't employees. They're tools with identities. Language clarity prevent
 ## When to Use This Pattern
 
 **Use when:**
-- Deploying autonomous agents (Workflow or Ambient class) that act without per-invocation human approval
+- Deploying autonomous agents that act without per-invocation human approval
 - Agents touch multiple systems or trust zones
 - Regulatory/compliance scope applies to agent actions
 - Blast radius of agent mistakes is non-trivial
 - You have more than 3 agents in production
 
 **Don't use when:**
-- Copilots only (human-initiated, human-supervised every step)
+- Human-in-the-loop systems where every action requires explicit invocation and approval
 - Single-purpose automaton with narrow, read-only scope
 - Throwaway prototype with no production data access
 
