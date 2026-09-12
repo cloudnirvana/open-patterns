@@ -355,6 +355,16 @@ Time: 2026-06-03 22:39 ET
 
 **State file is a single point of failure.** If `meter-state.json` is corrupted or deleted, all signals look like "first run" and may fire spurious transition alerts. Mitigate: keep the file small, back it up in the nightly maintenance cycle.
 
+### What Broke in Practice
+_This section is mandatory. No pattern is accepted without honest failure modes._
+
+- **The $176 invoice (the incident that created this pattern).** A misconfigured cron fired every 2 minutes instead of 15. Combined with the default 5-minute cache retention, each run rewrote ~73K tokens at $3.75/MTok — 52M tokens/day at 720 runs/day. No alert fired. The first signal was an Anthropic invoice. Diagnosis took 3 hours; the fix took 20 minutes. A $15 daily-threshold alert would have fired at 8 AM.
+- **Months with no observability at all.** Before this pattern, the system ran for months with no operational feedback loop. Problems surfaced only when a human noticed them externally — too late and too expensively.
+- **The first deployment shipped with a collector bug.** Infrastructure collectors didn't accept `**kwargs`, so four signals went `unknown` on day one. The isolation design meant the other fourteen kept working, and the bug was visible rather than silent — but it's an honest reminder that the observability layer itself needs to be observable.
+
+### Honest current state (2026-09)
+The signal registry, state-transition alerting, cooldown windows, and the shared ops-cache contract are live and have caught real bugs in production. Threshold calibration is still maturing — some thresholds remain educated guesses pending baseline data — and per-agent cost attribution is partially implemented. This pattern is published as **in-progress** for that reason: the architecture is proven, the calibration is ongoing.
+
 ---
 
 ## Known Implementation Pitfalls
@@ -431,3 +441,26 @@ First real alert: QMD watcher loop bug. Caught 30 minutes after deployment. Fixe
 *This pattern was extracted from the Cloud Nirvana AIOS implementation.*
 *Built 2026-06-03. Status: IN PROGRESS — production data accumulating.*
 *Contributions welcome: github.com/cloudnirvana/open-patterns*
+
+---
+
+## Metadata
+
+| Property | Value |
+|----------|-------|
+| **Contributor** | Sean Erikson & Lou, Cloud Nirvana |
+| **Production Environment** | Cloud Nirvana AIOS, macOS, OpenClaw, YAML signal registry, ops-cache JSON contract |
+| **First Published** | 2026-09-12 |
+| **Last Updated** | 2026-09-12 |
+| **Cloud Nirvana Event** | Q3 2026 — Transformation at Scale |
+| **License** | CC BY 4.0 |
+| **Status** | In-progress (architecture proven in production; threshold calibration and per-agent cost attribution ongoing) |
+
+---
+
+## Revision History
+
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-06 | Initial pattern authored from the $176 cost-anomaly incident | Sean Erikson / Lou |
+| 2026-09-12 | Normalized to house template, added explicit What Broke, Metadata, and Revision History; catalogued as in-progress for Q3 | Lou / Sean Erikson |

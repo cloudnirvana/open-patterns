@@ -304,11 +304,11 @@ Next hour :00 — Triage again
 |----------|-------|
 | **Contributor** | Sean Erikson, CEO, Cloud Nirvana |
 | **Production Environment** | OpenClaw + Gmail, Mac Mini M4, 11 agents |
-| **First Published** | 2026-04-05 (draft) |
+| **First Published** | 2026-09-12 |
 | **Last Updated** | 2026-04-05 |
 | **Cloud Nirvana Event** | AI Tinkerers Columbus (demo), 2026-04-07 |
 | **License** | CC BY 4.0 |
-| **Status** | Draft — backlog, not published to Open Patterns repo yet |
+| **Status** | Published |
 
 ---
 
