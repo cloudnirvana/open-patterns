@@ -1,4 +1,4 @@
-# Runbook-Driven Agent Cadence
+# Setlist-Driven Groove
 
 > **One-line intent:** Separate the clock from the brain — one cron fires on a fixed schedule, one editable runbook defines what the agent does at each interval, and configuration lives in a datastore, not in the cron definition.
 
@@ -289,7 +289,7 @@ Each agent gets:
 - **RACI-Scoped Notifications** — RACI assignments in runbook tasks drive notification routing.
 - **Escalation Chain with SLA** — Escalation policy defined in runbook headers, enforced by the Quarterdeck.
 - **EOD Reconciliation** — `done_when` and `verify` fields enable automated completion detection.
-- **Cron-Driven Agent Execution** — The predecessor pattern where behavior is embedded in the cron. Runbook-Driven Groove is the evolution.
+- **Cron-Driven Agent Execution** — The predecessor pattern where behavior is embedded in the cron. Setlist-Driven Groove is the evolution.
 - **Hub-and-Spoke Orchestration** — Lou's morning plan acts as the hub, distributing work to specialist agents (spokes) via the task board.
 - **Deterministic Session-Key Routing** — Each cron run creates an isolated session, keeping cadence runs separate from interactive sessions.
 

@@ -365,7 +365,7 @@ Let's execute.
 
 | Pattern | Relationship |
 |---------|-------------|
-| **Runbook-Driven Agent Cadence** | Runbooks are the input to POD generation; the POD is the daily execution of the runbook templates |
+| **Setlist-Driven Groove** | Runbooks are the input to POD generation; the POD is the daily execution of the runbook templates |
 | **RACI-Scoped Notifications** | RACI assignments in the POD determine who receives which notifications |
 | **Escalation Chain with SLA** | Carryover tasks and blockers on the POD trigger escalations when SLAs are exceeded |
 | **Hub-and-Spoke Orchestration** | The operations officer (Lou) acts as the hub, the POD is the work distribution mechanism to spoke agents |

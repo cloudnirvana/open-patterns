@@ -410,7 +410,7 @@ def deliver(recipient, event, channel, timing):
 |---------|-------------|
 | **Plan of the Day** | POD tasks include RACI assignments that drive notification routing |
 | **Escalation Chain with SLA** | Escalations change RACI (Responsible → Accountable → Consulted) and trigger real-time notifications |
-| **Runbook-Driven Agent Cadence** | Runbooks define default RACI per task type |
+| **Setlist-Driven Groove** | Runbooks define default RACI per task type |
 | **Hub-and-Spoke Orchestration** | The hub (operations officer) is typically Accountable for most tasks, spoke agents are Responsible |
 | **Ladder of Trust** | Notification routing respects trust levels (L1 agents don't announce autonomously, L3 agents do) |
 

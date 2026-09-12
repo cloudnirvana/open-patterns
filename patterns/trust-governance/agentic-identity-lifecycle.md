@@ -332,7 +332,7 @@ Agents aren't employees. They're tools with identities. Language clarity prevent
 
 - **Ladder of Trust** — Trust progression model (Mode 1 → 2 → 3)
 - **Quality Gate** — Pre-send checklist for agent output
-- **Runbook-Driven Agent Cadence** — Operational rhythm for production agents
+- **Setlist-Driven Groove** — Operational rhythm for production agents
 - **Email Metadata Standard** — Structured metadata for agent-sent emails
 
 ---

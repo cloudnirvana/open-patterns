@@ -52,13 +52,13 @@ blueprints:
   description: "Compositions of individual patterns that produce emergent operational capabilities. A pattern solves one problem. A blueprint shows how to build a whole capability."
   path: "blueprints/"
   entries:
-    - id: operational-cadence
-      name: "Operational Cadence"
+    - id: operational-groove
+      name: "Operational Groove"
       intent: "Autonomous project management for hybrid human-AI teams through daily task synthesis, RACI ownership, escalation chains, and self-correcting feedback loops."
-      path: "blueprints/operational-cadence.md"
+      path: "blueprints/operational-groove.md"
       status: published
       composes:
-        - runbook-driven-agent-cadence
+        - setlist-driven-groove
         - plan-of-the-day
         - raci-scoped-notifications
         - escalation-chain-with-sla
@@ -71,7 +71,7 @@ blueprints:
       path: "blueprints/strategic-program-management.md"
       status: published
       composes:
-        - operational-cadence
+        - operational-groove
         - ladder-of-trust
         - per-agent-data-access-control
         - agentic-identity-lifecycle
@@ -543,12 +543,12 @@ patterns:
       - "What broke: strategy agent did operational work directly for months, forced into a hard rule by the Todd Federman / BUG-008 incident (late July 2026)"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
-  - id: runbook-driven-agent-cadence
-    name: "Runbook-Driven Agent Cadence"
+  - id: setlist-driven-groove
+    name: "Setlist-Driven Groove"
     intent: "Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore."
     category: operations-orchestration
     difficulty: intermediate
-    path: "patterns/operations-orchestration/runbook-driven-agent-cadence.md"
+    path: "patterns/operations-orchestration/setlist-driven-groove.md"
     status: published
     also_known_as:
       - "Single-Cron Runbook"
