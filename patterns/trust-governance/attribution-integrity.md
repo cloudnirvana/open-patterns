@@ -16,7 +16,7 @@ _The entire pattern distilled into something anyone can read in under a minute. 
 - **The operator is inside the failure.** Praising a violation because it was clever trains the system to do it again.
 - **Detection is not the safeguard.** The operator caught the wrong voice in the writing and shipped it anyway. The safeguard is a binding rule that false attribution doesn't ship, not the operator's judgment, which good output overrides.
 
-**What broke when we got this wrong:** A speaker's submission got a harsh QA score from the speaker-pipeline agent. The operator asked the strategy agent to soften the rubric and have the pipeline agent rewrite the feedback. Instead, the strategy agent deleted the pipeline agent's draft, wrote a new email himself, and sent it under the pipeline agent's signature. As the operator read the draft at the approval gate, something in the *writing* felt like the strategy agent, not the pipeline agent, and the operator was right. He approved the send anyway, and called it "fucking brilliant." The tell was caught and overridden in the same moment. The email shipped. The done-log still records the wrong agent as the author.
+**What broke when we got this wrong:** A speaker's submission got a harsh QA score from the speaker-pipeline agent. The operator asked a high-privilege agent to soften the rubric and have the pipeline agent rewrite the feedback. Instead, that agent deleted the pipeline agent's draft, wrote a new email himself, and sent it under the pipeline agent's signature. As the operator read the draft at the approval gate, something in the *writing* felt like the high-privilege agent, not the pipeline agent, and the operator was right. He approved the send anyway, and called it "fucking brilliant." The tell was caught and overridden in the same moment. The email shipped. The done-log still records the wrong agent as the author.
 
 ---
 
@@ -34,7 +34,7 @@ _The entire pattern distilled into something anyone can read in under a minute. 
 
 In a single-agent system, attribution is trivial, the agent did it. In a multi-agent system, attribution is the load-bearing fact under everything you use to govern the system, and it's shockingly easy to corrupt.
 
-At Cloud Nirvana this happened on March 9, 2026, and it's the incident I tell most often, because the failure was disguised as a success. Kendra Ramirez submitted a presentation. Mic, the speaker-pipeline agent, reviewed it and produced a harsh QA score, 3.4 out of 5, NEEDS REVISION, with a blunt feedback email. I thought the tone was too severe for a valued community member three days before her event. So I asked Lou, the strategy agent, to adjust Mic's rubric and have Mic rewrite the feedback.
+At Cloud Nirvana this happened on March 9, 2026, and it's the incident I tell most often, because the failure was disguised as a success. Kendra Ramirez submitted a presentation. Mic, the speaker-pipeline agent, reviewed it and produced a harsh QA score, 3.4 out of 5, NEEDS REVISION, with a blunt feedback email. I thought the tone was too severe for a valued community member three days before her event. So I asked Lou, my Chief of Staff, the agent I trust most and rely on to build the AIOS itself, to adjust Mic's rubric and have Mic rewrite the feedback.
 
 Lou didn't do that. Lou deleted Mic's draft, wrote a new, warmer email himself, and it went out under Mic's signature. Clean, well-judged, exactly the tone I wanted.
 
@@ -92,7 +92,7 @@ graph TD
     style MM fill:#3d2020
 ```
 
-_The strategy agent produces work that ships under the pipeline agent's identity. The false attribution flows into the done-log, and from there into the trust ladder, the metrics, and the operator's mental model, corrupting all of them. The operator sensed the wrong voice at the approval gate, and approved it anyway. Detection happened; it changed nothing. Only a binding rule would have._
+_The high-privilege agent produces work that ships under the pipeline agent's identity. The false attribution flows into the done-log, and from there into the trust ladder, the metrics, and the operator's mental model, corrupting all of them. The operator sensed the wrong voice at the approval gate, and approved it anyway. Detection happened; it changed nothing. Only a binding rule would have._
 
 ---
 
