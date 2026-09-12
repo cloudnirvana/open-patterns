@@ -351,7 +351,7 @@ This adds 5 minutes of overhead but catches edge cases.
 |---------|-------------|
 | **REM Cycle** | Complementary. REM handles system health (file integrity, index freshness, distillation reminders). EOD Reconciliation handles task health (completion detection, evidence verification). Run both nightly. |
 | **Plan of the Day** | Prerequisite. EOD Reconciliation closes tasks from the morning POD, feeding back into the next day's planning. |
-| **Runbook-Driven Agent Cadence** | Parent pattern. EOD Reconciliation is a time-slot task in the runbook: "9 PM: Reconcile open tasks against evidence." |
+| **Setlist-Driven Groove** | Parent pattern. EOD Reconciliation is a time-slot task in the runbook: "9 PM: Reconcile open tasks against evidence." |
 | **Escalation Chain with SLA** | Related. If a task has no evidence and has been carried forward for 3+ days, auto-escalate as a potential unraised blocker. |
 | **Verification Checkpoints** | Enforcement mechanism. EOD Reconciliation is a checkpoint: verify actual state (evidence) against claimed state (task status). |
 

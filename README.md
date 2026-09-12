@@ -46,7 +46,7 @@ Each pattern has three layers. Read as deep as your role requires:
 
 ### Operations & Orchestration
 
-- **[Runbook-Driven Agent Cadence](patterns/operations-orchestration/runbook-driven-agent-cadence.md)** — Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore.
+- **[Setlist-Driven Groove](patterns/operations-orchestration/setlist-driven-groove.md)** — Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore.
 - **[Plan of the Day](patterns/operations-orchestration/plan-of-the-day.md)** — Synthesize multiple business event calendars, runbook playbooks, and in-flight work into a single daily executable plan with RACI ownership for every team member.
 - **[RACI-Scoped Notifications](patterns/operations-orchestration/raci-scoped-notifications.md)** — Control operational notification volume in multi-agent systems by routing messages based on each person's RACI role per task.
 - **[Escalation Chain with SLA](patterns/operations-orchestration/escalation-chain-with-sla.md)** — Ensure AI agents surface blockers within a time-bound window instead of silently stalling, retrying, or hallucinating workarounds.
@@ -85,8 +85,8 @@ Each pattern has three layers. Read as deep as your role requires:
 
 A pattern solves one problem. A **blueprint** shows how to build a whole capability by composing patterns together. You look at a blueprint and think "that's the thing I want to build."
 
-- **[Operational Cadence](blueprints/operational-cadence.md)** — Autonomous project management for hybrid human-AI teams. Composes: Runbook-Driven Agent Cadence, Plan of the Day, RACI-Scoped Notifications, Escalation Chain with SLA, EOD Reconciliation.
-- **[Strategic Program Management](blueprints/strategic-program-management.md)** — Scalable multi-agent program execution with built-in governance. Composes: Operational Cadence + Ladder of Trust + Per-Agent Data Access Control + Agentic Identity & Lifecycle + Hub-and-Spoke Orchestration.
+- **[Operational Groove](blueprints/operational-groove.md)** — Autonomous project management for hybrid human-AI teams. Composes: Setlist-Driven Groove, Plan of the Day, RACI-Scoped Notifications, Escalation Chain with SLA, EOD Reconciliation.
+- **[Strategic Program Management](blueprints/strategic-program-management.md)** — Scalable multi-agent program execution with built-in governance. Composes: Operational Groove + Ladder of Trust + Per-Agent Data Access Control + Agentic Identity & Lifecycle + Hub-and-Spoke Orchestration.
 
 ## Get Started
 

@@ -6,7 +6,7 @@
 
 ## What This Builds On
 
-Operational Cadence (the first blueprint) gives you daily execution: runbooks, POD, RACI, escalation, reconciliation. That handles one program well.
+Operational Groove (the first blueprint) gives you daily execution: runbooks, POD, RACI, escalation, reconciliation. That handles one program well.
 
 Strategic Program Management handles what happens when you're running five programs simultaneously with eleven agents at different trust levels, each with access to different data, all coordinating through one hub, with new agents being onboarded while existing ones are being evaluated for promotion.
 
@@ -18,7 +18,7 @@ This is the full operating model.
 
 | # | Pattern / Blueprint | What It Contributes |
 |---|-------------------|-------------------|
-| 1 | **Operational Cadence** (blueprint) | Daily execution engine: runbooks, POD, RACI, escalation, reconciliation |
+| 1 | **Operational Groove** (blueprint) | Daily execution engine: runbooks, POD, RACI, escalation, reconciliation |
 | 2 | **Ladder of Trust** | Four-level trust progression with quantitative metrics, leaderboard, and self-improvement cycle |
 | 3 | **Per-Agent Data Access Control** | Scoped database access per agent with authorization wrappers and audit logging |
 | 4 | **Agentic Identity & Lifecycle** | Five-phase agent lifecycle: provisioning, foundation training, domain training, production operations, sunset |
@@ -33,7 +33,7 @@ This is the full operating model.
 │          Strategic Program Management                │
 │                                                       │
 │  ┌─────────────────────────────────────────────┐     │
-│  │          Operational Cadence                  │     │
+│  │          Operational Groove                  │     │
 │  │  (Runbooks + POD + RACI +                     │     │
 │  │   Escalation + Reconciliation)                │     │
 │  └──────────────────┬──────────────────────────┘     │
@@ -95,7 +95,7 @@ You need Strategic Program Management when:
 
 You don't need this blueprint when:
 
-- You're running one program (Operational Cadence alone is sufficient)
+- You're running one program (Operational Groove alone is sufficient)
 - All agents have the same trust level and data access
 - You have fewer than 3 agents (the governance overhead exceeds the benefit)
 
@@ -104,7 +104,7 @@ You don't need this blueprint when:
 ## Implementation Sequence
 
 ```
-Prerequisite: Operational Cadence deployed and validated (4+ weeks)
+Prerequisite: Operational Groove deployed and validated (4+ weeks)
 
 Month 1: Trust Layer
   Deploy Ladder of Trust with quantitative metrics
@@ -150,9 +150,9 @@ Ongoing: Compound
 
 Individual patterns are useful. They solve real problems independently. But the composition is where the leverage lives.
 
-Operational Cadence alone gives you daily execution. Add the Ladder of Trust and you get governance. Add Agentic Identity and you get lifecycle management. Add Hub-and-Spoke and you get coordination. Add Per-Agent Data Access and you get enforcement.
+Operational Groove alone gives you daily execution. Add the Ladder of Trust and you get governance. Add Agentic Identity and you get lifecycle management. Add Hub-and-Spoke and you get coordination. Add Per-Agent Data Access and you get enforcement.
 
-Each layer adds a capability that the layers below need. The governance layer needs execution data to evaluate agents (from Operational Cadence). The lifecycle layer needs trust levels to determine privileges (from Ladder of Trust). The coordination layer needs RACI to route work (from Operational Cadence). The enforcement layer needs identity to scope access (from Agentic Identity).
+Each layer adds a capability that the layers below need. The governance layer needs execution data to evaluate agents (from Operational Groove). The lifecycle layer needs trust levels to determine privileges (from Ladder of Trust). The coordination layer needs RACI to route work (from Operational Groove). The enforcement layer needs identity to scope access (from Agentic Identity).
 
 They don't just coexist. They compose. And the composition produces capabilities that no individual pattern provides: traceable execution, compounding quality, scalable trust, and cross-program visibility.
 

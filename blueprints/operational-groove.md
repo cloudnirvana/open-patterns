@@ -1,4 +1,4 @@
-# Blueprint: Operational Cadence
+# Blueprint: Operational Groove
 
 > **One-line intent:** Autonomous project management for hybrid human-AI teams through daily task synthesis, RACI ownership, escalation chains, and self-correcting feedback loops.
 
@@ -14,7 +14,7 @@ A pattern solves one problem. A blueprint shows how to build a whole capability 
 
 ## The Capability
 
-Operational Cadence gives a hybrid human-AI team the ability to:
+Operational Groove gives a hybrid human-AI team the ability to:
 
 1. **Start each day with a unified plan** that everyone (human and AI) executes against
 2. **Assign work through RACI** so ownership is structural, not assumed
@@ -30,7 +30,7 @@ The result: a human can step away for a day and come back to a status report, no
 
 | # | Pattern | What It Contributes |
 |---|---------|-------------------|
-| 1 | **Runbook-Driven Agent Cadence** | Playbooks that define what work exists for each business event type. YAML runbooks with task templates, RACI, dependencies, and variable resolution. |
+| 1 | **Setlist-Driven Groove** | Playbooks that define what work exists for each business event type. YAML runbooks with task templates, RACI, dependencies, and variable resolution. |
 | 2 | **Plan of the Day** | Daily synthesis engine that reads runbooks + event calendars, deduplicates against in-flight work, and produces one executable plan with RACI assignments. |
 | 3 | **RACI-Scoped Notifications** | Controls who sees what. Notification routing based on each person's RACI role per task. Prevents spam without missing critical updates. |
 | 4 | **Escalation Chain with SLA** | When an agent is blocked, they raise it within an 8-hour window. Unraised blockers are tracked as the worst performance failure. |
@@ -73,7 +73,7 @@ No individual pattern here is revolutionary. Runbooks exist everywhere. Daily st
 
 ## When to Use This Blueprint
 
-You need Operational Cadence when:
+You need Operational Groove when:
 
 - You're running 3+ AI agents alongside humans
 - Work comes from multiple recurring sources (events, releases, campaigns, reviews)

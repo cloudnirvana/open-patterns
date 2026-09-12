@@ -410,7 +410,7 @@ def detect_unraised_blockers():
 | **Plan of the Day** | Tasks on the POD that encounter blockers trigger escalations; carryover tasks with escalations age differently than tasks without escalations |
 | **RACI-Scoped Notifications** | Escalations route to Accountable (A) role in real-time, Informed (I) role in batched summaries |
 | **Ladder of Trust** | Unraised blocker incidents are tracked as performance failures and affect agent trust level progression |
-| **Runbook-Driven Agent Cadence** | Runbooks define escalation chains and SLAs per task type |
+| **Setlist-Driven Groove** | Runbooks define escalation chains and SLAs per task type |
 | **Agent Performance Ladder** | Escalation discipline (raising blockers vs. sitting silently) is a key metric for agent advancement |
 
 ---
