@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (30 Published, 2 In Progress)
+## Patterns (31 Published, 3 In Progress)
 
 ### Trust & Governance
 
@@ -32,6 +32,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[Training Email Passthrough](patterns/trust-governance/training-email-passthrough.md)** — Self-addressed emails with 'Training' in the subject bypass production routing, enabling safe agent training without polluting operational queues or triggering real workflows.
 - **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, mandatory human ownership, and instant kill switch.
 - **[Memory vs. Authority Boundary](patterns/trust-governance/memory-vs-authority-boundary.md)** — Agents must treat memory as a hypothesis and datastores as truth — every factual claim in an external communication must be verified against the System of Record before use.
+- **[Operator Discipline](patterns/trust-governance/operator-discipline.md)** — The human operator must refuse the fast path, not doing operational work directly through a high-privilege agent even when it's faster, because the fast path bypasses the safeguards. The behavioral constraint you run while you build the architectural one.
 - **[Maker / Checker for Agents](patterns/trust-governance/maker-checker-for-agents.md)** — One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned.
 
 ### Agentic Architecture
@@ -62,6 +63,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[System Hygiene for Agentic Systems](patterns/production-readiness/system-hygiene-for-agentic-systems.md)** — Establish systematic pre/post-upgrade procedures, regression testing, and health validation to prevent production breakage when the underlying platform changes.
 - **[Quality Gate Checkpoint](patterns/production-readiness/quality-gate-checkpoint.md)** — All agents verify drafts against a shared quality checklist before notifying a human, preventing low-quality drafts from reaching the review queue.
 - **[Threshold-Gated Observability for AI Operating Systems](patterns/production-readiness/threshold-gated-observability.md)** :warning: — Monitor operational signals across an autonomous AI system, fire alerts only on meaningful state transitions, and surface health to every dashboard through one shared contract. **In progress, seeking practitioner input.**
+- **[Human Recovery Path](patterns/production-readiness/human-recovery-path.md)** :warning: — An autonomous system needs a recovery path a capable human can execute when the operator is not at the keyboard, and it has to be real infrastructure, not the luck of the right person being reachable. **In progress, seeking practitioner input.**
 - **[Business Continuity & Disaster Recovery for Agent Systems](patterns/production-readiness/business-continuity-disaster-recovery.md)** :warning: — Ensure agent-dependent operations can resume within acceptable timeframes when platform failures, data corruption, or human error cause production outages. **In progress, seeking practitioner input.**
 - **[Local-First Data Architecture](patterns/production-readiness/local-first-data-architecture.md)** — Sync external data sources to local storage so agents never block on network failures during live operations.
 - **[REM Cycle: Nightly Maintenance for Agent Systems](patterns/production-readiness/rem-cycle-nightly-maintenance.md)** — Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle.

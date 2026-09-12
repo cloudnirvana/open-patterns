@@ -358,6 +358,25 @@ patterns:
       - "What broke: a misconfigured cron burned $176 in a day with no alert; first signal was the invoice"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
+  - id: human-recovery-path
+    name: "Human Recovery Path"
+    intent: "An autonomous system needs a recovery path a capable human can execute when the operator is not at the keyboard, and it has to be real infrastructure, not the luck of the right person being reachable."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/human-recovery-path.md"
+    status: in-progress
+    also_known_as:
+      - "Off-Keyboard Recovery"
+      - "The Someone-Else-Can-Fix-It Test"
+      - "Human Failover"
+    key_concepts:
+      - "Resilience is whether a capable human can bring the system back, not just whether it stays up"
+      - "Reachable remotely, legible to a non-builder, documented in a tested runbook, executable by more than one person"
+      - "A blank 'last drilled' date means you have a hypothesis, not a recovery path"
+      - "The happy ending hides the gap: a recovery that worked by luck is a near-miss, not proof of resilience"
+      - "What broke: gateway down 45 min before a demo, recovered only because a family member was home to fix JSON over the phone"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: business-continuity-disaster-recovery
     name: "Business Continuity & Disaster Recovery for Agent Systems"
     intent: "Ensure agent-dependent operations can resume within acceptable timeframes when platform failures, data corruption, or human error cause production outages."
@@ -522,6 +541,25 @@ patterns:
       - "Cache-miss is safe: query or escalate, never guess"
       - "Prompt-level verification is a speed bump; an architected pre-send gate is a wall"
       - "What broke: agent called a CISO a 'founder' from stale session memory the CRM would have corrected"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: operator-discipline
+    name: "Operator Discipline"
+    intent: "The human operator must refuse the fast path, not doing operational work directly through a high-privilege agent even when it's faster, because the fast path bypasses the safeguards. The behavioral constraint you run while you build the architectural one."
+    category: trust-governance
+    difficulty: foundational
+    path: "patterns/trust-governance/operator-discipline.md"
+    status: published
+    also_known_as:
+      - "The Operator Is the Checker"
+      - "Behavioral Enforcement"
+      - "Refusing the Fast Path"
+    key_concepts:
+      - "The human is the enforcement layer until the architectural wall exists"
+      - "Refuse the fast path on purpose, every time, even when authorized to take it"
+      - "Sequential with Maker/Checker, not redundant: discipline is interim, architecture is the successor"
+      - "Slippage moves rather than stops: enforce it at the high-stakes end and it reappears at the low-stakes end"
+      - "What broke: for months the operator watched the architect agent send emails directly and didn't stop it, because they were mostly right"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
   - id: maker-checker-for-agents
