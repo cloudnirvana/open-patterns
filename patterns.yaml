@@ -396,6 +396,44 @@ patterns:
       - "Distinct from human IAM and service accounts"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: memory-vs-authority-boundary
+    name: "Memory vs. Authority Boundary"
+    intent: "Agents must treat memory as a hypothesis and datastores as truth — every factual claim in an external communication must be verified against the System of Record before use."
+    category: trust-governance
+    difficulty: foundational
+    path: "patterns/trust-governance/memory-vs-authority-boundary.md"
+    status: published
+    also_known_as:
+      - "Cache Invalidation for Agents"
+      - "SoR-First Verification"
+      - "Hypothesis-Before-Claim"
+    key_concepts:
+      - "Memory is a cache: fast, stale, unverified; the System of Record is authority"
+      - "Every factual claim that leaves the system is verified against the SoR, not memory"
+      - "Cache-miss is safe: query or escalate, never guess"
+      - "Prompt-level verification is a speed bump; an architected pre-send gate is a wall"
+      - "What broke: agent called a CISO a 'founder' from stale session memory the CRM would have corrected"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: maker-checker-for-agents
+    name: "Maker / Checker for Agents"
+    intent: "One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned."
+    category: trust-governance
+    difficulty: intermediate
+    path: "patterns/trust-governance/maker-checker-for-agents.md"
+    status: published
+    also_known_as:
+      - "Four-Eyes for Agents"
+      - "Producer/Reviewer Separation"
+      - "Agent-in-the-Loop Review"
+    key_concepts:
+      - "The maker never clears its own work; the checker is a distinct human or agent"
+      - "Every correction is logged against the maker and feeds trust-ladder advancement"
+      - "Human-in-the-loop, agent-in-the-loop, and graduated hybrid variations"
+      - "Catches silent quality drift: the 'mostly fine' failure with no error signal"
+      - "What broke: strategy agent did operational work directly for months, forced into a hard rule by the Todd Federman / BUG-008 incident (late July 2026)"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: runbook-driven-agent-cadence
     name: "Runbook-Driven Agent Cadence"
     intent: "Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore."
@@ -485,4 +523,23 @@ patterns:
       - "Attribution logging (what evidence, what source)"
       - "Feeds carryover list for next day's planning"
       - "Complementary to REM Cycle (task health vs system health)"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: cron-as-task-runner-not-task-definer
+    name: "Cron as Task Runner, Not Task Definer"
+    intent: "Work definition lives in the WMS (Notion), trigger logic lives in cron, execution lives in the agent — crons are generic runners, not hardcoded task prompts."
+    category: operations-orchestration
+    difficulty: intermediate
+    path: "patterns/operations-orchestration/cron-as-task-runner-not-task-definer.md"
+    status: published
+    also_known_as:
+      - "WMS-Driven Execution"
+      - "Decoupled Task Orchestration"
+      - "Scheduler-Runner Separation"
+    key_concepts:
+      - "Three layers: WMS defines work, cron triggers, agent executes"
+      - "Change a task by editing the WMS, not by editing infrastructure"
+      - "One codebase serves scheduled, event-driven, and human-initiated triggers"
+      - "Agent reads the task definition fresh each run and writes status back"
+      - "Distinct from Cron-Driven Agent Execution: that governs when agents run, this governs where the task definition lives"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
