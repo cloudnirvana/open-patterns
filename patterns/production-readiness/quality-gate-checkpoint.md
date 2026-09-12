@@ -244,6 +244,9 @@ notify_human(context.agent_id, context.email_id)
 
 ### What Broke in Practice
 
+> **Honest current state (2026-09):** the quality gate itself — the self-check that runs before a draft reaches review — is live and enforced. The *learning loop* around it, where logged failures feed metrics that drive an agent's trust-ladder advancement, is designed but not yet running as a live automated process. The gate catches bad drafts today; the automated feedback that turns catch-rates into earned autonomy is the next build. Don't claim the loop is closed until it is.
+
+
 **CC preservation failure (March 2026):**
 - Agent read only latest message, not thread
 - Missed CC recipients from original email
@@ -348,7 +351,6 @@ notify_human(context.agent_id, context.email_id)
 | Organization | Context | Scale |
 |-------------|---------|-------|
 | Cloud Nirvana AIOS | 11 agents, email drafting for partnerships, events, speakers | ~20-30 drafts/week, quality gate deployed March 24, 2026 |
-| (Seeking contributions) | | |
 
 ---
 
@@ -356,8 +358,9 @@ notify_human(context.agent_id, context.email_id)
 
 | Pattern | Relationship |
 |---------|-------------|
-| [Context Lifecycle Management](../memory-context/context-lifecycle-management.md) | Pre-distillation validation: verify extraction quality before archiving |
+| [Context Lifecycle Management](../trust-governance/context-lifecycle-management.md) | Pre-distillation validation: verify extraction quality before archiving |
 | Ladder of Trust | Quality gate is enforcement for Guided tier (execute with guardrails) |
+| Maker/Checker for Agents | The quality gate is the maker's self-check; a separate checker (human or agent) is the next layer, and corrections logged there feed trust-ladder advancement |
 | Memory vs Persistence Boundary | "Source of Truth over Recall" principle—read canonical file, don't recall |
 | Hub-and-Spoke Orchestration | Failed quality checks escalate to hub (Lou) for resolution |
 | Files Over Databases | Quality checklist stored in file (docs/operations/QUALITY-GATE-STEP.md) |
@@ -369,13 +372,13 @@ notify_human(context.agent_id, context.email_id)
 
 | Property | Value |
 |----------|-------|
-| **Contributor** | Sean Erikson, CEO, Cloud Nirvana |
+| **Contributor** | Sean Erikson & Lou, Cloud Nirvana |
 | **Production Environment** | Gmail + OpenClaw, 11-agent AIOS |
-| **First Published** | 2026-04-05 (draft) |
-| **Last Updated** | 2026-04-05 |
-| **Cloud Nirvana Event** | AI Tinkerers Columbus (demo), 2026-04-07 |
+| **First Published** | 2026-09-12 |
+| **Last Updated** | 2026-09-12 |
+| **Cloud Nirvana Event** | Q3 2026 — Transformation at Scale |
 | **License** | CC BY 4.0 |
-| **Status** | Draft — backlog, not published to Open Patterns repo yet |
+| **Status** | Published |
 
 ---
 
@@ -384,3 +387,4 @@ notify_human(context.agent_id, context.email_id)
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-05 | Initial draft for backlog | Sean Erikson / Lou |
+| 2026-09-12 | Completed and promoted from draft for Q3; honest note added that the corrections-to-trust-advancement loop is designed but not yet running as a live process | Lou / Sean Erikson |
