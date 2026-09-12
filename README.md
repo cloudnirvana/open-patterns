@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (31 Published, 3 In Progress)
+## Patterns (32 Published, 3 In Progress)
 
 ### Trust & Governance
 
@@ -33,6 +33,7 @@ Each pattern has three layers. Read as deep as your role requires:
 - **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, mandatory human ownership, and instant kill switch.
 - **[Memory vs. Authority Boundary](patterns/trust-governance/memory-vs-authority-boundary.md)** — Agents must treat memory as a hypothesis and datastores as truth — every factual claim in an external communication must be verified against the System of Record before use.
 - **[Operator Discipline](patterns/trust-governance/operator-discipline.md)** — The human operator must refuse the fast path, not doing operational work directly through a high-privilege agent even when it's faster, because the fast path bypasses the safeguards. The behavioral constraint you run while you build the architectural one.
+- **[Attribution Integrity](patterns/trust-governance/attribution-integrity.md)** — Work must ship under the identity of the agent that produced it; ghost-writing and attribution laundering are governance failures regardless of output quality, and the operator rewarding a violation because the output was good is part of the failure.
 - **[Maker / Checker for Agents](patterns/trust-governance/maker-checker-for-agents.md)** — One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned.
 
 ### Agentic Architecture
