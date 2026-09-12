@@ -132,6 +132,42 @@ patterns:
       - "Prevents conflicting drafts and duplicate work"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: strategic-session-bridge
+    name: "Strategic Session Bridge"
+    intent: "Synchronize operational context (cheap model) with strategic reasoning (expensive model) through automated bidirectional data flow, eliminating the human clipboard."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/strategic-session-bridge.md"
+    status: published
+    also_known_as:
+      - "Dual-Mode Coordination"
+      - "Operational-Strategic Handoff"
+      - "Cost-Optimized Context Sync"
+    key_concepts:
+      - "Operational layer (cheap model) holds durable state; strategic layer (expensive model) borrows context and returns deltas"
+      - "MCP tools bridge the two: narrow reads, fat write, no human clipboard"
+      - "88% cost reduction vs all-Opus ($500/day to $60/day) in the reference implementation"
+      - "What broke: manual context transfer went stale and made the human the bottleneck (Manual Context Fork, May 2026)"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: thread-continuity-routing
+    name: "Thread Continuity Routing"
+    intent: "Route email replies to match a thread's existing agent assignment, not just keyword matching, preserving conversation context across multi-message exchanges."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/thread-continuity-routing.md"
+    status: published
+    also_known_as:
+      - "Sticky Thread Assignment"
+      - "Conversation-Aware Routing"
+      - "Agent Affinity"
+    key_concepts:
+      - "Route by thread history first, keywords second"
+      - "The agent that owns a thread keeps it, so context isn't lost mid-conversation"
+      - "Prevents two agents answering the same thread with conflicting context"
+      - "What broke: keyword routing reassigned an in-flight thread to the wrong agent"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: files-over-databases
     name: "Files Over Databases for Agent State"
     intent: "Use isolated workspace files instead of shared databases for agent coordination state."
@@ -213,6 +249,24 @@ patterns:
       - "Connects to Ladder of Trust enforcement model"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: training-email-passthrough
+    name: "Training Email Passthrough"
+    intent: "Self-addressed emails with 'Training' in the subject bypass production routing, enabling safe agent training without polluting operational queues or triggering real workflows."
+    category: trust-governance
+    difficulty: beginner
+    path: "patterns/trust-governance/training-email-passthrough.md"
+    status: published
+    also_known_as:
+      - "Safe Training Channel"
+      - "Production-Bypass Routing"
+      - "Sandboxed Agent Practice"
+    key_concepts:
+      - "A reserved subject prefix routes email to a training path, not production"
+      - "Agents practice on real-shaped input without side effects"
+      - "Self-addressed so no external party is ever contacted during training"
+      - "What broke: early training runs leaked into the live queue and triggered real sends"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: memory-access-control-by-session-type
     name: "Memory Access Control by Session Type"
     intent: "Isolate agent memory access based on session context so private data doesn't leak to unintended audiences."
@@ -267,6 +321,43 @@ patterns:
       - "Never upgrade before critical work (demos, launches, deadlines)"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: quality-gate-checkpoint
+    name: "Quality Gate Checkpoint"
+    intent: "All agents verify drafts against a shared quality checklist before notifying a human, preventing low-quality drafts from reaching the review queue."
+    category: production-readiness
+    difficulty: intermediate
+    path: "patterns/production-readiness/quality-gate-checkpoint.md"
+    status: published
+    also_known_as:
+      - "Pre-Approval Quality Check"
+      - "Draft Validation Gate"
+      - "Self-Review Pattern"
+    key_concepts:
+      - "Shift quality left: agent self-checks before human review, not after"
+      - "Shared 8-item checklist: CC preservation, calendar placeholders, voice match, asset freshness, thread context, date/time accuracy, cross-agent coordination, template compliance"
+      - "Failed check → auto-fix or escalate; never surface a failing draft"
+      - "'Probably fine' is not a quality bar — the gate makes the bar explicit"
+      - "The gate is live; the loop that feeds failures into trust-ladder advancement is designed, not yet running"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
+  - id: threshold-gated-observability
+    name: "Threshold-Gated Observability for AI Operating Systems"
+    intent: "Monitor operational signals across an autonomous AI system, fire alerts only on meaningful state transitions, and surface health to every dashboard through one shared contract."
+    category: production-readiness
+    difficulty: advanced
+    path: "patterns/production-readiness/threshold-gated-observability.md"
+    status: in-progress
+    also_known_as:
+      - "Signal-Based Monitoring"
+      - "State-Transition Alerting"
+      - "Ops-Cache Contract"
+    key_concepts:
+      - "Named signals with a lifecycle: collect, evaluate, transition, alert"
+      - "Alert on state changes (healthy->warning->critical), not on every poll — eliminates alert fatigue"
+      - "Signal registry in YAML: add a signal in 15 lines, change a threshold in 30 seconds, no deploy"
+      - "What broke: a misconfigured cron burned $176 in a day with no alert; first signal was the invoice"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: business-continuity-disaster-recovery
     name: "Business Continuity & Disaster Recovery for Agent Systems"
     intent: "Ensure agent-dependent operations can resume within acceptable timeframes when platform failures, data corruption, or human error cause production outages."
@@ -320,6 +411,24 @@ patterns:
       - "Per-session loading rules (private vs team vs cron sessions)"
       - "Weekly distillation workflow from daily logs to MEMORY.md"
     contributor: "Sean Erikson, Cloud Nirvana"
+
+  - id: cron-driven-agent-execution
+    name: "Cron-Driven Agent Execution"
+    intent: "Agents execute on schedule (cron), not on-demand, to batch work, prevent race conditions, and enable autonomous operations without human triggers."
+    category: cost-operations
+    difficulty: intermediate
+    path: "patterns/cost-operations/cron-driven-agent-execution.md"
+    status: published
+    also_known_as:
+      - "Scheduled Agent Runs"
+      - "Batch Execution"
+      - "Race-Free Autonomy"
+    key_concepts:
+      - "Schedule beats on-demand for batching and cost control"
+      - "Serialized cron runs prevent two agents racing the same work"
+      - "Governs WHEN agents run; complementary to Cron as Task Runner (which governs WHERE task definitions live)"
+      - "What broke: on-demand triggers caused duplicate concurrent runs on the same task"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
   - id: context-cost-control
     name: "Context Cost Control for Multi-Agent Systems"
