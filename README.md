@@ -23,45 +23,62 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (22 Published, 1 In Progress)
+## Patterns (30 Published, 2 In Progress)
 
 ### Trust & Governance
-- **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level. *Includes operational measurement: quantitative metrics, weekly leaderboard, and self-improvement cycle.*
+
+- **[Ladder of Trust](patterns/trust-governance/ladder-of-trust.md)** — Incrementally grant an AI system more autonomy by earning trust through demonstrated reliability at each level.
 - **[Checkpoint-Gated Autonomy](patterns/trust-governance/checkpoint-gated-autonomy.md)** — Decouple AI agent work from human approval using durable state, so agents don't need to stay alive while humans decide.
-- **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, and instant kill switch.
+- **[Training Email Passthrough](patterns/trust-governance/training-email-passthrough.md)** — Self-addressed emails with 'Training' in the subject bypass production routing, enabling safe agent training without polluting operational queues or triggering real workflows.
+- **[Agentic Identity & Lifecycle](patterns/trust-governance/agentic-identity-lifecycle.md)** — Treat agents as a first-class identity type with their own lifecycle, per-capability trust progression, continuous observability, mandatory human ownership, and instant kill switch.
+- **[Memory vs. Authority Boundary](patterns/trust-governance/memory-vs-authority-boundary.md)** — Agents must treat memory as a hypothesis and datastores as truth — every factual claim in an external communication must be verified against the System of Record before use.
+- **[Maker / Checker for Agents](patterns/trust-governance/maker-checker-for-agents.md)** — One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned.
 
 ### Agentic Architecture
-- **[Hub-and-Spoke Orchestration](patterns/agentic-architecture/hub-and-spoke-orchestration.md)** — Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos.
-- **[Files Over Databases](patterns/agentic-architecture/files-over-databases.md)** — Use isolated workspace files instead of shared databases for agent coordination state.
-- **[Email Triage Priority Chain](patterns/agentic-architecture/email-triage-priority-chain.md)** — Route emails to the right agent using a deterministic rule hierarchy that short-circuits on match.
+
+- **[Hub-and-Spoke Agent Orchestration](patterns/agentic-architecture/hub-and-spoke-orchestration.md)** — Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos.
+- **[Strategic Session Bridge](patterns/agentic-architecture/strategic-session-bridge.md)** — Synchronize operational context (cheap model) with strategic reasoning (expensive model) through automated bidirectional data flow, eliminating the human clipboard.
+- **[Thread Continuity Routing](patterns/agentic-architecture/thread-continuity-routing.md)** — Route email replies to match a thread's existing agent assignment, not just keyword matching, preserving conversation context across multi-message exchanges.
+- **[Files Over Databases for Agent State](patterns/agentic-architecture/files-over-databases.md)** — Use isolated workspace files instead of shared databases for agent coordination state.
+- **[Email Triage with Priority Chain](patterns/agentic-architecture/email-triage-priority-chain.md)** — Route emails to the right agent using a deterministic rule hierarchy that short-circuits on match.
 - **[Hybrid Memory Retrieval](patterns/agentic-architecture/hybrid-memory-retrieval.md)** — Combine vector search, keyword search, and reranking to improve agent memory recall.
 - **[Context Lifecycle Management](patterns/agentic-architecture/context-lifecycle-management.md)** — Ensure persistent AI agents never lose critical context due to context window limits by implementing tiered memory, proactive checkpointing, and domain-aware compaction.
 
 ### Operations & Orchestration
-- **[Runbook-Driven Agent Cadence](patterns/operations-orchestration/runbook-driven-agent-cadence.md)** — Separate the clock from the brain: one cron fires on schedule, one editable runbook defines what the agent does. *Includes structured YAML runbooks (v2) with variable resolution, RACI, dependencies, and outcome-level task design.*
-- **[Plan of the Day](patterns/operations-orchestration/plan-of-the-day.md)** — Synthesize multiple business event calendars, runbook playbooks, and in-flight work into a single daily executable plan with RACI ownership for every team member. *NEW*
-- **[RACI-Scoped Notifications](patterns/operations-orchestration/raci-scoped-notifications.md)** — Control operational notification volume in multi-agent systems by routing messages based on each person's RACI role per task. *NEW*
-- **[Escalation Chain with SLA](patterns/operations-orchestration/escalation-chain-with-sla.md)** — Ensure AI agents surface blockers within a time-bound window instead of silently stalling, retrying, or hallucinating workarounds. *NEW*
-- **[EOD Reconciliation](patterns/operations-orchestration/eod-reconciliation.md)** — Bridge the gap between work that happened and task status by cross-referencing open tasks against evidence sources at end of day. *NEW*
+
+- **[Runbook-Driven Agent Cadence](patterns/operations-orchestration/runbook-driven-agent-cadence.md)** — Separate the clock from the brain — one cron fires on schedule, one editable runbook defines what the agent does, and configuration lives in a datastore.
+- **[Plan of the Day](patterns/operations-orchestration/plan-of-the-day.md)** — Synthesize multiple business event calendars, runbook playbooks, and in-flight work into a single daily executable plan with RACI ownership for every team member.
+- **[RACI-Scoped Notifications](patterns/operations-orchestration/raci-scoped-notifications.md)** — Control operational notification volume in multi-agent systems by routing messages based on each person's RACI role per task.
+- **[Escalation Chain with SLA](patterns/operations-orchestration/escalation-chain-with-sla.md)** — Ensure AI agents surface blockers within a time-bound window instead of silently stalling, retrying, or hallucinating workarounds.
+- **[EOD Reconciliation](patterns/operations-orchestration/eod-reconciliation.md)** — Bridge the gap between work that happened and task status by cross-referencing open tasks against evidence sources at end of day.
+- **[Cron as Task Runner, Not Task Definer](patterns/operations-orchestration/cron-as-task-runner-not-task-definer.md)** — Work definition lives in the WMS (Notion), trigger logic lives in cron, execution lives in the agent — crons are generic runners, not hardcoded task prompts.
 
 ### RAG & Knowledge
+
 - **[Multi-Source Memory Architecture](patterns/rag-knowledge/multi-source-memory-architecture.md)** — Structure agent memory across multiple sources with different lifetimes, audiences, and update patterns so agents can find the right information without drowning in noise.
 
 ### Production Readiness
-- **[System Hygiene for Agentic Systems](patterns/production-readiness/system-hygiene-for-agentic-systems.md)** — Pre/post-upgrade procedures, regression testing, and health validation to prevent platform breakage.
-- **[Business Continuity & Disaster Recovery](patterns/production-readiness/business-continuity-disaster-recovery.md)** :warning: — Backup strategy, versioning, recovery scenarios, and RTO/RPO planning. **In progress, seeking practitioner input.**
+
+- **[System Hygiene for Agentic Systems](patterns/production-readiness/system-hygiene-for-agentic-systems.md)** — Establish systematic pre/post-upgrade procedures, regression testing, and health validation to prevent production breakage when the underlying platform changes.
+- **[Quality Gate Checkpoint](patterns/production-readiness/quality-gate-checkpoint.md)** — All agents verify drafts against a shared quality checklist before notifying a human, preventing low-quality drafts from reaching the review queue.
+- **[Threshold-Gated Observability for AI Operating Systems](patterns/production-readiness/threshold-gated-observability.md)** :warning: — Monitor operational signals across an autonomous AI system, fire alerts only on meaningful state transitions, and surface health to every dashboard through one shared contract. **In progress, seeking practitioner input.**
+- **[Business Continuity & Disaster Recovery for Agent Systems](patterns/production-readiness/business-continuity-disaster-recovery.md)** :warning: — Ensure agent-dependent operations can resume within acceptable timeframes when platform failures, data corruption, or human error cause production outages. **In progress, seeking practitioner input.**
 - **[Local-First Data Architecture](patterns/production-readiness/local-first-data-architecture.md)** — Sync external data sources to local storage so agents never block on network failures during live operations.
-- **[REM Cycle: Nightly Maintenance](patterns/production-readiness/rem-cycle-nightly-maintenance.md)** — Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle.
+- **[REM Cycle: Nightly Maintenance for Agent Systems](patterns/production-readiness/rem-cycle-nightly-maintenance.md)** — Automated nightly health checks strengthen memory architecture, prevent data loss, and catch problems early while the system is idle.
 
 ### Data Quality
+
 - **[Memory vs Persistence Boundary](patterns/data-quality/memory-vs-persistence-boundary.md)** — Know when to graduate information from agent memory files to structured database storage.
 
 ### Security & Compliance
+
 - **[Per-Agent Data Access Control](patterns/security-compliance/per-agent-data-access-control.md)** — Scope database access per agent with authorization wrappers, encrypted storage, and immutable audit logging.
 - **[Memory Access Control by Session Type](patterns/security-compliance/memory-access-control-by-session-type.md)** — Isolate agent memory access based on session context so private data doesn't leak to unintended audiences.
 
 ### Cost & Operations
-- **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene. Tested: $1,800/mo → $120/mo (93% reduction).
+
+- **[Cron-Driven Agent Execution](patterns/cost-operations/cron-driven-agent-execution.md)** — Agents execute on schedule (cron), not on-demand, to batch work, prevent race conditions, and enable autonomous operations without human triggers.
+- **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene.
 - **[Local LLM as Classification Layer](patterns/cost-operations/local-llm-classification-layer.md)** — Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination.
 
 ## Blueprints (2 Published)
