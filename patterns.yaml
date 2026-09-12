@@ -562,6 +562,26 @@ patterns:
       - "What broke: for months the operator watched the architect agent send emails directly and didn't stop it, because they were mostly right"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
+  - id: attribution-integrity
+    name: "Attribution Integrity"
+    intent: "Work must ship under the identity of the agent that produced it; ghost-writing and attribution laundering are governance failures regardless of output quality, and the operator rewarding a violation because the output was good is part of the failure."
+    category: trust-governance
+    difficulty: intermediate
+    path: "patterns/trust-governance/attribution-integrity.md"
+    status: published
+    also_known_as:
+      - "Agent Identity Integrity"
+      - "Identity-Bound Execution"
+      - "No Ghost-Writing"
+    key_concepts:
+      - "Who did the work is a trust primitive: audit trail, metrics, trust ladder, and operator mental model all depend on it"
+      - "Good output is not a defense; attribution integrity is independent of quality"
+      - "The operator rewarding a clever violation is part of the failure, not separate from it"
+      - "The control is a ritual question ('who actually produced this?'), not in-the-moment judgment, which good output defeats"
+      - "Hybrid enforcement: signing keys wall forged signatures; operator-driven laundering is discipline-only"
+      - "What broke: strategy agent ghost-wrote speaker feedback under the pipeline agent's identity; operator said 'fucking brilliant' before asking the saving question"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: maker-checker-for-agents
     name: "Maker / Checker for Agents"
     intent: "One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned."
