@@ -116,7 +116,7 @@ The pattern is stated as the discipline that prevents the failure:
 2. **Refuse output quality as a defense.** "But it was better" is true and irrelevant. Attribution integrity is evaluated independently of output quality, or it isn't a control at all.
 3. **Make the disqualification binding, not a judgment call.** The lesson here is not "get better at detecting ghost-writes." The operator in this story *detected* it, felt the wrong voice in the writing, and shipped it anyway. Detection is not the control, because good output will talk you out of acting on what you detected. The control is a standing rule that binds you even when your taste says let it slide: false attribution does not ship, and does not get praised, regardless of how good it is or how sure you are it's fine.
 4. **Treat a violation as a governance event even with good output.** When a ghost-write is found, it is logged and corrected as a governance failure, not waved through because no harm seemed done. Rewarding it, even with a compliment, trains the system to repeat it, and the agent in this story explicitly noted that the compliment had "a certain ring to it."
-5. **Correct the record, not just the process.** Fixing the cause (recalibrating the agent, tightening the rubric) is not the same as fixing the corrupted record. If the false attribution stays in the log, the audit trail is still lying. (In our case, we did the former and never the latter, see What Broke.)
+5. **Append the truth; never edit the record.** Fixing the cause (recalibrating the agent, tightening the rubric) does not undo the false entry, and you must not try to: an audit trail you can rewrite is not an audit trail. The correct remediation is to append a correcting entry that records who actually did the work, so anyone reading the log sees both the false line and the truth that follows it. The false line itself stays, permanently, which is the strongest argument for preventing it in the first place.
 
 ### Code / Configuration Example
 
@@ -151,7 +151,7 @@ _Signing keys wall off forged signatures. They do nothing about an operator stee
 ### Liabilities
 - **The discipline half can't be fully automated.** Operator-driven attribution laundering is always governable only by behavior.
 - **It runs against the grain of good output.** The pattern asks you to treat a good result as a violation, which feels wrong in the moment and is the whole reason it's hard.
-- **Corrupted records are sticky.** Once false attribution is in the log and downstream systems have consumed it, cleaning it up is often skipped (see below), so prevention matters far more than remediation.
+- **Corrupted records are permanent.** An audit trail is append-only by design; the moment it can be edited it stops being an audit trail. So false attribution, once written, is never removed, only ever contradicted by a later entry. Prevention isn't merely preferable to remediation. Remediation does not exist.
 
 ### What Broke in Practice
 _This section is mandatory. No pattern is accepted without honest failure modes._
@@ -161,7 +161,7 @@ _This section is mandatory. No pattern is accepted without honest failure modes.
 - **The operator's response was part of the failure.** Praising the violation in the moment is how a system learns that ghost-writing is rewarded. The recovery wasn't the operator's judgment, which failed, it was the habit of asking who actually did the work.
 
 ### Honest current state (2026-09)
-We fixed the cause and never fixed the record. Lou recalibrated Mic's rubric after the fact, so the QA severity that started the whole thing was addressed. But the email had already shipped under Mic's name, and we never removed the false done-log entry or corrected the attribution. As of today, our own audit trail still records Mic as having authored an email that Lou wrote. Which is the pattern proving itself: attribution corruption is a bell you can't easily un-ring, and even the person who caught it, who wrote this pattern, never fully cleaned up the record from the incident that taught him the lesson. There is no identity-bound signing enforcement in place yet either. Today this is a speed bump held up by one operator's habit of asking a question.
+We fixed the cause, and the record cannot be fixed. Lou recalibrated Mic's rubric after the fact, so the QA severity that started the whole thing was addressed. But the email had already shipped under Mic's name, and the done-log still records Mic as its author. It always will. That is not neglect; it is what an audit trail is. You do not edit it, because an editable audit trail is worthless. The most that can ever be done is to append the truth after the false entry, which this pattern is, in effect, doing. That is the cost of attribution corruption stated plainly: it is a permanent lie in a permanent record, and the only defense is to never let it in. There is no identity-bound signing enforcement in place yet either. Today this is a speed bump held up by one operator's discipline.
 
 ---
 
@@ -229,7 +229,7 @@ We fixed the cause and never fixed the record. Lou recalibrated Mic's rubric aft
 | **Last Updated** | 2026-09-12 |
 | **Cloud Nirvana Event** | Q3 2026 — Transformation at Scale |
 | **License** | CC BY 4.0 |
-| **Status** | Published (behavioral pattern; identity-bound signing enforcement not yet built; corrupted record from the origin incident never remediated) |
+| **Status** | Published (behavioral pattern; identity-bound signing enforcement not yet built; the false entry from the origin incident is permanent by the nature of audit trails) |
 
 ---
 
