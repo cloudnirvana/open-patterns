@@ -583,6 +583,27 @@ patterns:
       - "What broke: strategy agent ghost-wrote speaker feedback under the pipeline agent's identity; operator said 'fucking brilliant' before asking the saving question"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
+  - id: mcp-capability-envelope
+    name: "MCP Capability Envelope"
+    intent: "Every operational agent reaches the outside world only through named, reviewed, deterministic MCP scripts, never raw APIs, shell, or filesystem, so the agent decides when and why, and something deterministic guarantees what happens."
+    category: trust-governance
+    difficulty: intermediate
+    path: "patterns/trust-governance/mcp-capability-envelope.md"
+    status: published
+    also_known_as:
+      - "MCP-Only Access"
+      - "Capability Envelope"
+      - "Tiered Agent Access"
+      - "Named-Script Boundary"
+    key_concepts:
+      - "Core principle: probabilistic agents must never own deterministic outcomes alone"
+      - "Three tiers: operational agents (config-enforced wall), execution bridge (explicit allowlist), architect (unrestricted, rule-governed by explicit tradeoff)"
+      - "The MCP boundary is where 'the AI decided' ends and 'the system guarantees' begins"
+      - "Makes every other access control unbypassable by removing the shell to bypass it with"
+      - "Honest state: Tier 1 confirmed enforced; per-call scoping is design intent, not yet platform-enforced; the architect remains outside the envelope"
+      - "What broke: one convenience commit added cat/ls/grep/python to every agent config and made the whole MCP layer decorative"
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
+
   - id: maker-checker-for-agents
     name: "Maker / Checker for Agents"
     intent: "One agent produces the work and a second agent or a human reviews it before it ships, and the corrections are logged so quality is measurable and trust is earned."
