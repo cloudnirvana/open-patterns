@@ -393,9 +393,10 @@ patterns:
       - "Versioning: config snapshots, database versions, dependency pinning"
       - "Recovery scenarios: platform failure, corruption, human error, total loss"
       - "RTO/RPO: recovery time and data loss objectives"
-      - "Testing: quarterly restore drills validate backups work"
-      - "SEEKING PRACTITIONER INPUT: share your disaster recovery experiences"
-    contributor: "Sean Erikson, Cloud Nirvana"
+      - "Testing: quarterly restore drills validate backups work (prescribed, not yet executed at Cloud Nirvana)"
+      - "What broke: written in April promising honesty when the first disaster came; it came in June (Rev1) and again in July, both recovered by a human at a terminal, never by this plan"
+      - "The missing piece: a human recovery component (see Human Recovery Path). Backups ran; the drill never did; recovery was luck."
+    contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
   - id: local-first-data-architecture
     name: "Local-First Data Architecture"

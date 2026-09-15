@@ -15,9 +15,9 @@
 - **Versioning strategy:** Config snapshots, database versions, dependency pinning
 - **Recovery scenarios:** Platform failure, corruption, human error, total loss
 - **RTO/RPO:** How fast must you recover? How much data loss is acceptable?
-- **Testing:** Quarterly restore drills, validate backups work
+- **Testing:** Quarterly restore drills, validate backups work (prescribed here; not yet executed at Cloud Nirvana — see What Broke)
 
-**What broke when we got this wrong:** *(Seeking practitioner input — we haven't had a disaster yet, but when we do, this section will be brutally honest.)*
+**What broke when we got this wrong:** We wrote this framework in April and promised to be brutally honest when the first disaster came. It came in June: forty-five minutes before a live demo, an agent wrote a malformed config file, the gateway went down, and eleven agents went dark. Recovery happened only because the operator's daughter was home and could fix the file over the phone. We had nightly backups. We had never run a restore drill. The recovery plan that actually worked was luck.
 
 ---
 
@@ -318,22 +318,21 @@ cp /tmp/backup-20260406/MEMORY.md workspace/MEMORY.md
 - **Maintenance overhead** — Retention policies, cleanup scripts, monitoring backup health
 
 ### What Broke in Practice
+_This section is mandatory. No pattern is accepted without honest failure modes._
 
-**⚠️ SEEKING PRACTITIONER INPUT**
+This framework was written on April 6, 2026, before any disaster, with a note promising to be brutally honest once one arrived. Two arrived. Here is the honest version.
 
-We haven't experienced a disaster yet. This pattern documents the framework we've built based on:
-- Industry best practices (RTO/RPO from enterprise DR planning)
-- Our architecture (SQLCipher databases, file-based memory, git-versioned config)
-- Preventive measures already in place (REM Cycle nightly backups, git commits)
+**Rev1 Ventures, June 16, 2026 — the disaster this document was written to anticipate.** Forty-five minutes before a live demo of the full system, a last-minute fix to the agent-onboarding module wrote a malformed config file (`openclaw.json`) directly to disk. The gateway rejected it on startup and went down; all eleven agents went dark. The operator was in the venue parking lot with no laptop. Recovery worked only because the operator's nineteen-year-old daughter was home, understood the system, and could SSH in and correct the file from a verbal walkthrough over the phone. The demo went on. The audience never knew.
 
-**What we need from you:**
-- **Database corruption:** How did you detect it? What recovery path worked? What didn't?
-- **Total system loss:** How long did full rebuild take? What was hardest to restore?
-- **Backup failures:** When did you discover your backups were broken? How?
-- **Human error:** Accidental deletions, wrong commands—what saved you?
-- **RTO/RPO reality check:** Are our targets realistic? Too aggressive? Too conservative?
+What this exposed: every backup mechanism in this document was running. None of it mattered, because the failure was a live config corruption, not data loss, and the only recovery path that existed was a *person* with access and knowledge who happened to be reachable. The framework had no human component in it at all. Change one variable, she isn't home, and the demo doesn't happen.
 
-**If you've lived through agent system disaster recovery, please contribute your story.**
+**July 12, 2026 — the same root cause, again.** A scheduled job set up to restart the gateway under memory pressure wrote to the same config file directly, malformed it, and took the gateway down a second time. Recovery again required a human at a terminal. The lesson was not about restarts or backups; it was that agents were writing directly to files they should only touch through a validated interface (see Human Recovery Path and the file-write boundary it documents).
+
+**September 2026 — BUG-012, the small version.** A stale lock file blocked an agent from starting. The fix was a human manually deleting the file from the terminal. Minor, but the same shape: recovery depended on a specific person knowing a specific fix and having access. The gap bites at every scale, not just catastrophes.
+
+**The uncomfortable summary.** Nightly database backups run. Git versioning runs. The quarterly restore drill prescribed above has never been executed. Off-machine sync is not confirmed to be running. No step-by-step recovery runbook has ever been tested. As of this revision, "recovery" at Cloud Nirvana still means a capable human happened to be reachable. That is not infrastructure. That is luck and family, and this document exists to say so out loud.
+
+**Still seeking practitioner input** on the scenarios we haven't lived: database corruption, full hardware loss, and a backup that turned out to be broken when it was needed. If you've recovered from those, your story belongs here.
 
 ---
 
@@ -435,7 +434,7 @@ We haven't experienced a disaster yet. This pattern documents the framework we'v
 
 | Organization | Context | Scale |
 |-------------|---------|-------|
-| Cloud Nirvana AIOS | Framework defined, nightly backups running, quarterly drill not yet executed | Awaiting first disaster or drill validation |
+| Cloud Nirvana AIOS | Framework defined April 2026; two production outages since (June 16, July 12) both recovered by a human at a terminal; nightly backups running; restore drill still never executed | Team — survived the first disasters on luck, not on this plan |
 | **⚠️ SEEKING CONTRIBUTIONS** | Have you recovered from agent system failure? Share your experience. | |
 
 ---
@@ -448,6 +447,8 @@ We haven't experienced a disaster yet. This pattern documents the framework we'v
 | REM Cycle (Nightly Maintenance) | Detection (catch issues early) + Backup automation |
 | Files Over Databases | Simpler recovery (files = copy/restore vs DB migration complexity) |
 | Context Lifecycle Management | Memory checkpoints are backup targets |
+| Human Recovery Path | The human component this framework was missing: when self-healing fails and the operator is away, recovery depends on a capable human being reachable, legible, and drilled. Rev1 proved it. |
+| Threshold-Gated Observability | Detects the failure that triggers recovery; observability without a tested recovery path just tells you you're down |
 
 ---
 
@@ -483,9 +484,10 @@ Your war stories make this pattern real.
 |----------|-------|
 | **Contributor** | Sean Erikson, CEO, Cloud Nirvana |
 | **Production Environment** | OpenClaw + Mac Mini, 11 agents, SQLCipher databases |
-| **First Published** | 2026-04-06 (draft, framework only) |
-| **Last Updated** | 2026-04-06 |
-| **Status** | ⚠️ **IN PROGRESS** — Seeking practitioner validation |
+| **First Published** | 2026-04-06 (framework only) |
+| **Last Updated** | 2026-09-15 |
+| **Cloud Nirvana Event** | Q3 2026 — Transformation at Scale |
+| **Status** | ⚠️ **IN PROGRESS** — framework proven necessary by two real outages; restore drill and off-machine sync still unverified |
 | **License** | CC BY 4.0 |
 
 ---
@@ -495,3 +497,4 @@ Your war stories make this pattern real.
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-06 | Initial framework draft, marked as in-progress, seeking practitioner input | Sean Erikson / Lou |
+| 2026-09-15 | Replaced the "no disaster yet" placeholder with the real incidents (Rev1 June 16, July 12, BUG-012); honest current-state on the untested drill; linked Human Recovery Path as the missing human component | Lou / Sean Erikson |
