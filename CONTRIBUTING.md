@@ -1,5 +1,7 @@
 # Contributing to Open Patterns
 
+**The What Broke section is mandatory.** Every pattern in this catalog was extracted from a real production failure, and yours has to be too. If it never broke, it isn't a pattern yet.
+
 Thank you for contributing. This catalog is built by practitioners, for practitioners.
 
 ## How to Contribute

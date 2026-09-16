@@ -1,6 +1,8 @@
 # Pattern Discovery Prompt
 
 > Copy this prompt and give it to your AI agent along with access to your codebase or system documentation. It will scan for patterns and draft pattern cards for your review.
+>
+> Looking for the other direction, which catalog patterns your system has or is missing? Use [`ASSESSMENT-PROMPT.md`](ASSESSMENT-PROMPT.md) instead.
 
 ---
 
@@ -16,15 +18,19 @@ First, read these files from the Open Patterns repo:
 3. patterns/trust-governance/ladder-of-trust.md — a reference pattern showing the expected quality and depth
 
 Then scan our system (codebase, architecture docs, configuration, deployment scripts) and identify
-implementations that match any of these 7 pattern categories:
+implementations that match any of the pattern categories defined in patterns.yaml.
+As of this writing there are 8:
 
 1. Trust & Governance — permissions, approvals, human oversight, progressive autonomy
 2. Agentic Architecture — agent coordination, orchestration, state management
-3. RAG & Knowledge — retrieval, chunking, search, knowledge management
-4. Production Readiness — failures, fallbacks, offline operation, deployment
-5. Data Quality — identity resolution, dedup, enrichment, validation
-6. Cost & Operations — token management, monitoring, scaling, scheduling
-7. Security & Compliance — credentials, PII, trust boundaries, audit
+3. Operations & Orchestration — runbooks, cadence, escalation, daily planning and reconciliation
+4. RAG & Knowledge — retrieval, chunking, search, knowledge management
+5. Production Readiness — failures, fallbacks, recovery, deployment
+6. Data Quality — identity resolution, dedup, enrichment, validation
+7. Cost & Operations — token management, monitoring, scaling, scheduling
+8. Security & Compliance — credentials, PII, trust boundaries, audit
+
+If patterns.yaml lists categories not shown here, use the file, not this list.
 
 For each pattern you identify:
 1. Draft a complete pattern card following PATTERN-TEMPLATE.md

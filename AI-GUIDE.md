@@ -14,11 +14,21 @@ This is the Open Patterns Initiative by Cloud Nirvana: an open-source catalog of
 2. **Read `PATTERN-TEMPLATE.md`** for the pattern structure your output must follow
 3. **Read one published pattern** (e.g., `patterns/trust-governance/ladder-of-trust.md`) to calibrate quality and depth
 
+### If Your Task Is to Assess a System Against the Catalog
+
+You've been asked which patterns a system already implements, which it's missing, and what those gaps cost. Use the full prompt in [`ASSESSMENT-PROMPT.md`](ASSESSMENT-PROMPT.md). The short version:
+
+1. Read `patterns.yaml` for every pattern and every category
+2. For each pattern, classify the target system: IMPLEMENTED, PARTIAL, MISSING, or NOT APPLICABLE
+3. For anything IMPLEMENTED or PARTIAL, cite the evidence and classify it: CONFIG, CODE, PROMPT, or NONE. A rule that exists only in a prompt is not an implementation; call it PARTIAL and list it separately as a speed bump
+4. For each applicable MISSING pattern, summarize its "What Broke in Practice" section in two sentences: that is the cost of the gap
+5. Report: a summary table, the top gaps ranked by severity of "What Broke," the speed-bump list, and any candidate patterns the catalog lacks
+
 ### If Your Task Is to Find Patterns in a System
 
 You've been asked to scan a codebase, architecture, or system and identify patterns that match this catalog. Here's how:
 
-1. Read `patterns.yaml` to understand the 9 pattern categories
+1. Read `patterns.yaml` and take the list of pattern categories from it (do not assume the count; it changes)
 2. For each category, scan the target system for implementations that match:
    - **Trust & Governance:** How does the system handle permissions, approvals, human oversight, progressive autonomy?
    - **Agentic Architecture:** How are agents/services coordinated? Hub-and-spoke? Peer-to-peer? How is state managed?
