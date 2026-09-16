@@ -99,7 +99,8 @@ A pattern solves one problem. A **blueprint** shows how to build a whole capabil
 **Have an AI agent with repo access?** Point it here. It should read these files:
 - **[`patterns.yaml`](patterns.yaml)** — Machine-readable catalog index
 - **[`AI-GUIDE.md`](AI-GUIDE.md)** — Instructions for AI agents
-- **[`DISCOVERY-PROMPT.md`](DISCOVERY-PROMPT.md)** — Prompt for autonomous pattern discovery
+- **[`ASSESSMENT-PROMPT.md`](ASSESSMENT-PROMPT.md)** — Prompt to assess your own system against the catalog: what you have, what you're missing, what it cost the people who were missing it
+- **[`DISCOVERY-PROMPT.md`](DISCOVERY-PROMPT.md)** — Prompt for autonomous pattern discovery and contribution
 
 Point your agent at this repo. It will know what to do.
 
