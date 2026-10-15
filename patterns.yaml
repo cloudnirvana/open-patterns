@@ -132,6 +132,26 @@ patterns:
       - "Prevents conflicting drafts and duplicate work"
     contributor: "Sean Erikson, Cloud Nirvana"
 
+  - id: system-one-decisions
+    name: "System One Decisions"
+    intent: "Route narrow, high-frequency judgment calls to a constrained decision model that picks from a list your code built and returns a calibrated probability your code can threshold."
+    category: agentic-architecture
+    difficulty: intermediate
+    path: "patterns/agentic-architecture/system-one-decisions.md"
+    status: published
+    also_known_as:
+      - "Constrained Decision Model"
+      - "Typed Decision Gate"
+      - "Pick-Don't-Generate"
+      - "Fast-Path Classifier"
+    key_concepts:
+      - "Deterministic code builds the finite answer space; the model can only pick from it"
+      - "Calibrated probability lets the risk threshold live in code, not in a prompt"
+      - "Every decision goes to the cheapest layer that can make it correctly"
+      - "A constrained output space removes hallucination, not misunderstanding"
+      - "Hard time budget with fail-open to the slower path"
+    contributor: "Sean Erikson & Jonathan Erikson, Cloud Nirvana"
+
   - id: strategic-session-bridge
     name: "Strategic Session Bridge"
     intent: "Synchronize operational context (cheap model) with strategic reasoning (expensive model) through automated bidirectional data flow, eliminating the human clipboard."
