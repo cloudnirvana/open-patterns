@@ -2,7 +2,7 @@
 
 > Copy this prompt and give it to your AI agent along with access to your codebase, configuration, and system documentation. In about ten minutes it will tell you which Open Patterns your system already implements, which ones you're missing, and what broke for the people who were missing them.
 
-This is the fastest way to get value from the catalog. You don't have to read 36 patterns. Your agent reads them and reports back against *your* system.
+This is the fastest way to get value from the catalog. You do not have to read 37 patterns. Your agent reads them and reports back against *your* system.
 
 ---
 
