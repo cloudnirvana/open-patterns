@@ -23,7 +23,7 @@ Each pattern has three layers. Read as deep as your role requires:
 | **Motivation + Structure + Consequences** | Leaders, architects, PMs | The "why," the framework, the tradeoffs. |
 | **Full Implementation** | Engineers, implementers | Config examples, diagrams, code, security analysis. |
 
-## Patterns (33 Published, 3 In Progress)
+## Patterns (34 Published, 3 In Progress)
 
 ### Trust & Governance
 
@@ -39,6 +39,7 @@ Each pattern has three layers. Read as deep as your role requires:
 
 ### Agentic Architecture
 
+- **[System One Decisions](patterns/agentic-architecture/system-one-decisions.md)** — Route narrow, high-frequency judgment calls to a constrained decision model that can only pick from a list your code built, and returns a calibrated probability your code can threshold, instead of spending an LLM call on them.
 - **[Hub-and-Spoke Agent Orchestration](patterns/agentic-architecture/hub-and-spoke-orchestration.md)** — Coordinate multiple AI agents through a single hub, eliminating lateral communication chaos.
 - **[Strategic Session Bridge](patterns/agentic-architecture/strategic-session-bridge.md)** — Synchronize operational context (cheap model) with strategic reasoning (expensive model) through automated bidirectional data flow, eliminating the human clipboard.
 - **[Thread Continuity Routing](patterns/agentic-architecture/thread-continuity-routing.md)** — Route email replies to match a thread's existing agent assignment, not just keyword matching, preserving conversation context across multi-message exchanges.
