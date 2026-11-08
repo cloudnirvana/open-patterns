@@ -351,7 +351,7 @@ Time: 2026-06-03 22:39 ET
 
 **Threshold calibration takes time.** Initial thresholds are educated guesses. Some will be too sensitive (firing on legitimate heavy sessions), some too loose (missing real anomalies). Plan for 2 weeks of baseline data before thresholds stabilize.
 
-**Per-agent cost signals multiply signal count.** 5 per-agent cost signals doubles the cost signal set from 3 to 8. This is worth it for attribution — knowing "the agent is the expensive one today" is much more actionable than "total cost is high" — but it requires per-agent threshold calibration.
+**Per-agent cost signals multiply signal count.** 5 per-agent cost signals doubles the cost signal set from 3 to 8. This is worth it for attribution — knowing "Research is the expensive one today" is much more actionable than "total cost is high" — but it requires per-agent threshold calibration.
 
 **State file is a single point of failure.** If `meter-state.json` is corrupted or deleted, all signals look like "first run" and may fire spurious transition alerts. Mitigate: keep the file small, back it up in the nightly maintenance cycle.
 
