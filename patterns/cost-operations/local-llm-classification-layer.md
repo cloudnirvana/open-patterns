@@ -11,8 +11,8 @@
 **The architecture:**
 ```
 Email arrives
-  → Deterministic rules (60-70% of emails, $0 cost, <1ms)
-  → Local LLM fallback (30-40% of emails, $0 cost, 25-72s)
+  → Deterministic rules (the obvious cases, $0 cost, <1ms)
+  → Local LLM fallback (the ambiguous remainder, $0 cost, 25-72s)
   → Cloud model execution (draft email, coordinate agents)
 ```
 
@@ -72,11 +72,11 @@ elif 'speaker' in subject.lower():
 
 **Option 3: Local LLM for classification (this pattern)**
 ```python
-# Deterministic rules first (fast, free, cover 60-70%)
+# Deterministic rules first (fast, free, cover the obvious cases)
 if email.starred or is_support_ticket(email) or is_noise_domain(email.sender):
     return deterministic_route(email)
 
-# Local LLM fallback for ambiguous cases (30-40%)
+# Local LLM fallback for ambiguous cases
 classification = local_llm.classify_with_thinking(email, thread_context)
 # Cost: $0
 # Speed: 25-72s (local inference)
@@ -151,7 +151,7 @@ if any(kw in subject.lower() or kw in body[:300].lower() for kw in speaker_keywo
     return 'Mic'
 ```
 
-**Coverage:** 60-70% of emails caught by deterministic rules.
+**Coverage:** the obvious cases (starred, support tickets, known noise domains, named-agent and keyword matches). The share of mail the rules catch was not measured.
 
 **Cost:** $0
 
@@ -447,7 +447,7 @@ REASONING: Thread continuity (Lou-managed speaker pipeline) overrides sender dom
 ## Known Uses
 
 **Multi-agent email triage (production):**
-- Hybrid: deterministic rules (60-70% coverage) → Qwen 3 8B fallback (30-40%)
+- Hybrid: deterministic rules first → Qwen 3 8B fallback for the remainder
 - 12/12 test batch accuracy after tuning
 - Cron runs every 15 min, processes 1-15 emails per batch
 - Cost: $0 vs previous Sonnet triage (~$12/month)
@@ -455,6 +455,8 @@ REASONING: Thread continuity (Lou-managed speaker pipeline) overrides sender dom
 **Model:** Qwen 3 8B (Apache 2.0 license, 128K context, thinking mode)
 
 **Hardware:** Mac Mini M4, 24 GB RAM, 10 cores
+
+**What happened next (April 19, 2026):** five days after this pattern was written, the system-level launchd job was removed and email triage was moved to an OpenClaw scheduled job, which runs inside an agent session (a model-wrapped run) on a 15-minute cycle. The job still calls the same script, so the rules-first, local-model-fallback classification described here is unchanged; what changed is the scheduler around it, from a free system cron to one that costs a model call per cycle. The trade was made for a single cron system with alerting rather than for cost. The pattern stands as a classification design; the "$0 per cycle" scheduling claim no longer describes the Cloud Nirvana deployment.
 
 ---
 

@@ -41,7 +41,7 @@ That constraint is the point. In a generative system you prevent bad output by a
 
 The second property that matters is calibration. Any model can report confidence. A calibrated model's confidence means something across many answers, which is what lets a threshold live in code. "Show the card above 0.8" is a decision you can test against recorded traps, tune, and explain to a risk committee. "We instructed the model to be careful" is not.
 
-In the build this pattern came from, a pair of smart glasses listens to a conversation and decides, on every speech pause, whether a person in the operator's CRM was just named. At that frequency, three properties decide the architecture: it has to answer in a fraction of a second, it has to cost almost nothing, and it absolutely cannot invent a person. A frontier model fails all three. The decision model answers in 200-500 ms for a rounding error, and the invention failure is structurally impossible.
+In the build this pattern came from, a demo application on a pair of smart glasses listens to a conversation and decides, on every speech pause, whether a person in the operator's CRM was just named. At that frequency, three properties decide the architecture: it has to answer in a fraction of a second, it has to be cheap enough to run on every pause, and it absolutely cannot invent a person. A generative model struggles with all three. In the demo shown on October 16, 2026, the decision model answered in a measured 130 to 260 ms per decision, and the invention failure is structurally impossible.
 
 The broader principle this expresses: **every decision should go to the cheapest layer that can make it correctly.** Not the smartest layer. Deterministic code where the answer is knowable, a System One model where it's a narrow judgment, an LLM where it genuinely needs reasoning, a human where it's consequential. Push work down whenever you can; go up only when the layer below actually can't do it. Get that wrong upward and you pay frontier prices to decide whether an email goes to finance. Get it wrong downward and you hard-code a rule that shatters the first time reality doesn't match it.
 
@@ -74,7 +74,7 @@ graph TD
     Input["Transcript / event / state"]
 
     Build["DETERMINISTIC CODE<br/>Match, pull real records,<br/>build the finite answer space"]
-    Model["SYSTEM ONE MODEL<br/>One call, 200-500 ms<br/>Pick one, or none"]
+    Model["SYSTEM ONE MODEL<br/>One call, 130-260 ms measured<br/>Pick one, or none"]
     Gate{"DETERMINISTIC CODE<br/>p >= bar?"}
 
     Silence["Do nothing<br/>(silence is a valid outcome)"]
@@ -232,7 +232,7 @@ Two lessons, and the second is the important one. First, an agent's own name ins
 
 | Organization | Context | Scale |
 |-------------|---------|-------|
-| Cloud Nirvana | Ambient listening on Even Realities G2 glasses: person, event and meet-up detection on every speech pause, feeding an AIOS agent. Deterministic candidate assembly from the CRM, one typed decision call, threshold in code, human long-press for anything outbound. | 1 decision per utterance, continuous |
+| Cloud Nirvana | Demo application on Even Realities G2 glasses, shown at OHIOXR on October 16, 2026: person, event and meet-up detection on every speech pause, feeding an AIOS agent. Deterministic candidate assembly from the CRM, one typed decision call, threshold in code, human long-press for anything outbound. Not part of the production agent system. | 1 decision per utterance during the demo; 130 to 260 ms measured per decision |
 
 ---
 
@@ -253,7 +253,7 @@ Two lessons, and the second is the important one. First, an agent's own name ins
 | Property | Value |
 |----------|-------|
 | **Contributor** | Sean Erikson & Jonathan Erikson, Cloud Nirvana |
-| **Production Environment** | Cloud Nirvana AIOS · Even Realities G2 · TypeSafe Jev · OpenClaw gateway |
+| **Environment** | Demo application (OHIOXR, October 16, 2026): Even Realities G2 · TypeSafe Jev · OpenClaw gateway · Cloud Nirvana AIOS agent as the actor |
 | **First Published** | 2026-10-15 |
 | **Last Updated** | 2026-10-15 |
 | **Cloud Nirvana Event** | OHIOXR 2026 — "Lou on Glass" |

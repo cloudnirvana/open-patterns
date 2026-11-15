@@ -166,7 +166,7 @@ patterns:
     key_concepts:
       - "Operational layer (cheap model) holds durable state; strategic layer (expensive model) borrows context and returns deltas"
       - "MCP tools bridge the two: narrow reads, fat write, no human clipboard"
-      - "88% cost reduction vs all-Opus ($500/day to $60/day) in the reference implementation"
+      - "Operational cost under the split was an estimated $60 a day in April 2026; no all-Opus comparison was measured"
       - "What broke: manual context transfer went stale and made the human the bottleneck (Manual Context Fork, May 2026)"
     contributor: "Sean Erikson & Lou, Cloud Nirvana"
 
@@ -472,7 +472,7 @@ patterns:
 
   - id: context-cost-control
     name: "Context Cost Control for Multi-Agent Systems"
-    intent: "Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene."
+    intent: "Control token costs through model selection, retrieval tuning, index pruning, and memory hygiene."
     category: cost-operations
     difficulty: intermediate
     path: "patterns/cost-operations/context-cost-control.md"
@@ -483,7 +483,7 @@ patterns:
       - "Memory Hygiene Discipline"
     key_concepts:
       - "6-layer strategy: model selection, retrieval tuning, index pruning, memory hygiene, cron auditing, bootstrap discipline"
-      - "Tested: $1,800/mo → $120/mo (93% cost reduction)"
+      - "Applied April 2026 from an estimated $60 a day; the saving was not measured against the invoice"
       - "QMD snippet limits: 3 results, 400 chars/snippet, 2K injection cap (71% reduction per search)"
       - "Weekly distillation with auto-archive prevents unbounded growth"
       - "Implementation checklist: 4-week rollout"
@@ -501,7 +501,7 @@ patterns:
       - "Local Inference for Classification"
       - "Hybrid Classification Pipeline"
     key_concepts:
-      - "Hybrid: deterministic rules (60-70%) → local LLM (30-40%) → cloud model execution"
+      - "Hybrid: deterministic rules first → local LLM for the remainder → cloud model execution (scheduling later moved to a model-wrapped job, April 19 2026)"
       - "Reasoning quality > speed for classification"
       - "Qwen 3 8B with thinking mode: 12/12 accuracy, $0 cost per classification"
       - "Hardware: Mac Mini M4 24GB, Ollama, ~6GB RAM for 8B model"

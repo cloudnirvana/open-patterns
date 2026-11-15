@@ -3,7 +3,7 @@
 **Category:** Cost Operations  
 **Status:** Production-Ready  
 **Last Updated:** 2026-04-14  
-**Confidence:** High (tested in production, 93% cost reduction achieved)
+**Confidence:** Medium (applied in production in April 2026; the size of the saving was not measured, see "What we did not measure")
 
 ---
 
@@ -15,7 +15,7 @@ Token costs spiral as agent context grows from indexed documentation, accumulate
 - Daily API costs in the $50-100 range despite modest usage
 - Individual requests costing $10-12 (cache writes on 200K+ token context)
 - Costs growing linearly with documentation, daily notes, and operational history
-- "Helpful" background crons burning $8-10/day on invisible operations
+- "Helpful" background crons running invisibly, each one a full-context API call
 
 ---
 
@@ -41,7 +41,7 @@ Production multi-agent systems where:
 ## Forces
 
 **Performance vs Cost**  
-Larger context improves retrieval quality and agent capability, but cache writes scale exponentially with context size. A 200K token cache write on Opus costs $0.75 — multiply by hourly crons and you're burning $10-15/day on background tasks alone.
+Larger context improves retrieval quality and agent capability, but cache writes scale exponentially with context size. A 200K token cache write on Opus costs $0.75; multiply by hourly crons and background tasks alone become a material share of the bill.
 
 **Convenience vs Discipline**  
 It's easy to index everything ("the agent might need it someday"). It's hard to maintain bounded memory with regular distillation and archival. But unbounded growth makes costs unpredictable.
@@ -138,7 +138,7 @@ A six-layer cost control strategy:
 
 ---
 
-### 3. Index Pruning (76% Context Reduction)
+### 3. Index Pruning (76% Cut by Size)
 
 **Index only what agents actively need. Archive the rest.**
 
@@ -153,7 +153,7 @@ docs/
   patterns/         ❌ Open Patterns catalog (reference)
   architecture/     ❌ System design docs (reference)
 
-Total: 60 files, 505KB
+Total: 60 files, 505 KB
 ```
 
 **After (operational focus):**
@@ -178,7 +178,7 @@ Total: 60 files, 505KB
 }
 ```
 
-**Result:** 15 files, 121KB (76% reduction)
+**Result:** about 15 files, 121 KB, a 76% cut by size (measured April 14, 2026). Searches that returned 6 longer results now return 3 short ones.
 
 **Access to excluded docs:** Still on disk, manually readable via `read` tool when needed. Just not indexed for automatic search.
 
@@ -300,8 +300,8 @@ Example audit:
 **Looks cheap, but:**
 - These are cached hits (best case)
 - Cache misses cost 3-5× more
-- Multiply by cron failures, retries, and you're at $1-2/day
-- Over a month: $30-60 just on crons
+- Multiply by cron failures and retries and the real figure is several times the best case
+- Over a month, crons alone are a line item worth auditing
 
 #### Step 3: Eliminate or Optimize
 
@@ -437,7 +437,7 @@ wc -c MEMORY.md AGENTS.md SOUL.md USER.md TOOLS.md IDENTITY.md
 
 ### Benefits
 
-✅ **Predictable costs** — 90%+ reduction achievable (tested: $1,800/mo → $120/mo)  
+✅ **Predictable costs** — the two largest levers (a cheaper default model, background jobs off) act immediately; measure the result against your invoice  
 ✅ **Faster retrieval** — smaller index = faster semantic search  
 ✅ **Better signal-to-noise** — curated memory beats raw dumps  
 ✅ **Sustainable long-term** — bounded growth prevents future cost explosions  
@@ -485,23 +485,33 @@ Database backups, index health checks, file integrity validation. Memory distill
 
 **Context:** 11-agent system (Lou, Scout, Vega, Mic, Echo, Ink, Sage, Pulse, Ledger, Dex, Neo) handling email triage, speaker pipeline, partnership operations, finance, and community engagement.
 
-**Problem:** Costs hit $60/day ($1,800/mo projected) due to:
+**Problem:** Costs reached an estimated $60 a day in April 2026 due to:
 - Opus by default (3.3× more expensive cache writes)
-- Unbounded QMD index (60 docs, 505KB)
+- Unbounded QMD index (60 files, 505 KB)
 - Expensive hourly crons (email triage, briefings, pipeline checks)
 - No memory hygiene (daily notes accumulating since February)
 
-**Solution applied:**
-1. Switched default to Sonnet → saved $14/day
-2. Tuned QMD limits (3 results, 400 chars) → saved $1/day
-3. Pruned index (60 → 15 files, 505KB → 121KB) → saved $3/day
-4. Disabled expensive crons → saved $8/day
-5. Migrated email triage to system cron (local Qwen 3 8B) → saved $0.30/day
+**Solution applied,** in order of expected size. The two largest were a cheaper default model and turning background jobs off:
+1. Switched the default model from Opus to Sonnet
+2. Disabled the expensive hourly crons (briefings, pipeline checks)
+3. Pruned the index (60 files, 505 KB, to about 15 files, 121 KB)
+4. Tuned QMD limits (3 results, 400 chars)
+5. Moved email triage to a system cron running a local model (see "What happened next" in [Local LLM as Classification Layer](./local-llm-classification-layer.md))
 6. Weekly distillation cron (prevents future growth)
 
-**Result:** $60/day → $4/day = **93% cost reduction** ($1,800/mo → $120/mo)
+**Result:** not measured. See "What we did not measure" below.
 
-**Timeline:** 48 hours from crisis discovery to full implementation.
+**Timeline:** the changes were made in one day, April 13 to 14, 2026.
+
+---
+
+## What We Did Not Measure
+
+The six changes above were made in one day, April 13 to 14, 2026. The cost before them is an estimate (about $60 a day, read from the provider's usage view in April 2026). The cost after them was never checked against the invoice, so the size of the saving is not known, and earlier versions of this pattern stated a figure that had not been measured.
+
+Two of the six changes (the cheaper default model and turning background jobs off) are large on their face. The other four are small and were never isolated.
+
+**Do this instead of what we did:** record the cost next to each run (model, tokens in and out, cache writes, dollars) and reconcile the sum against the monthly bill. A cost control pattern without a measured result is a hypothesis, not a result.
 
 ---
 
@@ -514,10 +524,10 @@ Cache writes on 200K+ token context cost $10-12 per cache miss. With hourly cron
 Initially believed QMD front-loaded all 60 indexed docs into session context (false). Reality: QMD is retrieval-based, but retrieval costs add up. 10 searches × 6 results × 700 chars = 42K chars injected. The fix wasn't changing QMD architecture; it was tuning snippet limits.
 
 **Cron proliferation**  
-"Helpful" background tasks (morning briefings, pipeline checks) ran invisibly, burning $8-10/day. They felt free (no user interaction), but every cron run is an API call with full context bootstrap.
+"Helpful" background tasks (morning briefings, pipeline checks) ran invisibly. They felt free (no user interaction), but every cron run is an API call with full context bootstrap.
 
 **Model defaults matter**  
-Using Opus by default meant every casual question, every cron, every email triage burned 3.3× more than necessary. The 30-second conversation about switching models saved $400/month.
+Using Opus by default meant every casual question, every cron, every email triage burned 3.3× more than necessary at list price. The 30-second conversation about switching models was the single largest lever.
 
 **Unbounded growth assumption**  
 Assumed daily notes would "stay manageable" without active intervention. Reality: 365 files/year, plus checkpoints, plus new docs. Without distillation discipline, costs double every 6-12 months.
@@ -570,7 +580,7 @@ The index pruning (60 → 15 files) felt scary. "What if we need those legal doc
 ## Anti-Patterns (What NOT To Do)
 
 **❌ "We'll optimize later"**  
-Costs compound daily. A $60/day problem is a $1,800/month problem. "Later" becomes "when the bill is unaffordable." Optimize now.
+Costs compound daily. A daily problem is a monthly problem thirty times over. "Later" becomes "when the bill is unaffordable." Optimize now.
 
 **❌ Index everything "just in case"**  
 The cost of indexing unused docs is real and recurring. The cost of manually reading a file when needed is zero (one-time `read` tool call).
@@ -627,6 +637,6 @@ Slack/email alert when daily costs exceed threshold (e.g., >$10/day). Catches re
 
 **Pattern Author:** Lou (Cloud Nirvana AIOS)  
 **Implemented:** April 13-14, 2026  
-**Tested In Production:** Cloud Nirvana AIOS (11 agents, 2-month runtime)  
-**Outcome:** 93% cost reduction ($1,800/mo → $120/mo) sustained over 30+ days  
-**Status:** Production-ready, battle-tested
+**Applied In:** Cloud Nirvana AIOS (11 agents configured at the time; see [Known Uses](#known-uses))  
+**Outcome:** cost before the change was an estimated $60 a day; cost after was not measured against the invoice  
+**Status:** Production-ready; the saving is unquantified

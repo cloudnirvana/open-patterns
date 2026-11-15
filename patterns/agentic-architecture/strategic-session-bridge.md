@@ -288,7 +288,7 @@ Do NOT use when:
 
 ### Benefits
 
-- **Cost optimization:** Run 90% of work on cheap model, 10% on expensive model. Cloud Nirvana AIOS: $50/day operational + $20/week strategic = ~$60/day average, vs. $500+/day all-Opus.
+- **Cost optimization:** Run most work on the cheap model and reserve the expensive one for strategic sessions. Cloud Nirvana's operational cost under this split was an estimated $60 a day in April 2026; an all-Opus figure was never measured, so no comparison is claimed.
 - **No human bottleneck:** Strategic sessions start instantly (one tool call for context), finish instantly (one tool call writes results).
 - **Context accuracy:** Real-time operational data (not stale manual copy). Structured writes (not transcription errors).
 - **Trust preservation:** Action items land in Notion immediately. Next strategic session sees accurate state.
@@ -605,7 +605,7 @@ def write_session_output(payload):
 - Manual context transfer time: 15-30 min → 0 min
 - Action item transfer errors: 10-20% → 0%
 - Strategic session start latency: 5-15 min → 30 sec
-- Cost: All-Opus ($500/day) → Hybrid ($60/day) = 88% reduction
+- Cost: operational spend on the cheap model is the baseline; track it next to each run and compare against your own all-expensive-model estimate
 
 **Qualitative:**
 - Human reports: "I no longer dread strategic sessions because of setup overhead"
