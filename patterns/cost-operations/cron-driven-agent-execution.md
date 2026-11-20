@@ -13,7 +13,7 @@
 - Staggered timing across the hour
 - Agent checks queue → processes all work → marks done → waits for next cycle
 
-**What broke when we got this wrong:** 169 cron runs/day across agents burned tokens on redundant inbox checks. Reduced to 69/day (hourly instead of every 15 min) saved 60% cost with zero quality loss.
+**What broke when we got this wrong:** every-15-minute crons across all agents burned tokens on redundant inbox checks, most of which found nothing. Moving to hourly removed most of those runs with no user-visible change; the cost difference was not measured.
 
 ---
 
@@ -187,9 +187,9 @@ Next hour :00 — Triage again
 ### What Broke in Practice
 
 **Token burn (Feb-Mar 2026):**
-- Started with every-15-min crons for all agents (169 runs/day)
+- Started with every-15-min crons for all agents
 - Most runs: "no new emails" → wasted tokens on model load
-- **Fix:** Reduced to hourly (69 runs/day). 60% cost savings, zero user-visible impact.
+- **Fix:** Reduced to hourly. Zero user-visible impact; the cost difference was not measured.
 - **Lesson:** Responsiveness illusion. 15 min vs 60 min SLA doesn't matter for email work.
 
 **Race condition (pre-cron):**
@@ -280,7 +280,7 @@ Next hour :00 — Triage again
 
 | Organization | Context | Scale |
 |-------------|---------|-------|
-| Cloud Nirvana AIOS | 11 agents, email orchestration + CRM maintenance | 69 cron runs/day, ~100-200 emails/week processed |
+| Cloud Nirvana AIOS | 11 agents configured; email orchestration + CRM maintenance | Hourly crons per agent, ~100-200 emails/week processed |
 | (Seeking contributions) | | |
 
 ---

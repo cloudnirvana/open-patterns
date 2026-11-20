@@ -83,7 +83,7 @@ Each pattern has three layers. Read as deep as your role requires:
 ### Cost & Operations
 
 - **[Cron-Driven Agent Execution](patterns/cost-operations/cron-driven-agent-execution.md)** — Agents execute on schedule (cron), not on-demand, to batch work, prevent race conditions, and enable autonomous operations without human triggers.
-- **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Reduce token costs 90%+ through retrieval tuning, index pruning, and memory hygiene.
+- **[Context Cost Control for Multi-Agent Systems](patterns/cost-operations/context-cost-control.md)** — Control token costs through model selection, retrieval tuning, index pruning, and memory hygiene.
 - **[Local LLM as Classification Layer](patterns/cost-operations/local-llm-classification-layer.md)** — Use a free local model for reasoning-heavy classification tasks, keep expensive cloud models for drafting, generation, and coordination.
 
 ## Blueprints (2 Published)
